@@ -13,6 +13,9 @@ public enum ErrorStatus implements BaseErrorCode {
     VALIDATION_FAILED(HttpStatus.BAD_REQUEST, "VALID4001", "입력값 유효성 검증에 실패했습니다."),
     MISSING_PARAMETER(HttpStatus.BAD_REQUEST, "VALID4002", "필수 파라미터가 누락되었습니다."),
     TYPE_MISMATCH(HttpStatus.BAD_REQUEST, "VALID4003", "파라미터 타입이 올바르지 않습니다."),
+    FILE_SIZE_EXCEEDED(HttpStatus.PAYLOAD_TOO_LARGE, "FILE4004", "파일 크기가 제한을 초과했습니다."),
+    FILE_UPLOAD_ERROR(HttpStatus.BAD_REQUEST, "FILE4005", "파일 업로드 중 오류가 발생했습니다."),
+    INVALID_FILE_TYPE(HttpStatus.BAD_REQUEST, "FILE4006", "지원하지 않는 파일 형식입니다."),
 
     // 401 Unauthorized
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "AUTH401", "인증이 필요합니다."),

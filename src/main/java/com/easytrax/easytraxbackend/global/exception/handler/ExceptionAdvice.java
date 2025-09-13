@@ -6,6 +6,7 @@ import com.easytrax.easytraxbackend.global.code.status.ErrorStatus;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -18,13 +19,16 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
+@Slf4j
 @RestControllerAdvice(annotations = RestController.class)
 public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 
@@ -87,39 +91,45 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 
     // RequestParam 검증 실패 시
     @ExceptionHandler(ConstraintViolationException.class)
-    protected ResponseEntity<Object> handleConstraintViolation(
-            ConstraintViolationException ex,
-            WebRequest request) {
-
+    public ResponseEntity<ApiResponse<Void>>
+    handleConstraintViolation(ConstraintViolationException ex) {
         String code = ex.getConstraintViolations().stream()
-                .map(ConstraintViolation::getMessage)
+                .map(ConstraintViolation::getMessageTemplate)  // "{EMAIL_FORMAT_ERROR}"
+                .filter(Objects::nonNull)
+                .map(template -> template.replaceAll("[{}]", ""))  // "EMAIL_FORMAT_ERROR"
+                .filter(c -> !c.isEmpty())
                 .findFirst()
                 .orElse(ErrorStatus.VALIDATION_FAILED.name());
 
-        BaseErrorCode ec = ErrorStatus.valueOf(code);
-        ApiResponse<Void> body = ApiResponse.of(ec, null);
+        BaseErrorCode ec;
+        try {
+            ec = ErrorStatus.valueOf(code);
+        } catch (IllegalArgumentException e) {
+            ec = ErrorStatus.VALIDATION_FAILED;  // 안전한 폴백
+        }
 
-        return ResponseEntity
-                .status(ec.getHttpStatus())
-                .body(body);
+        return ResponseEntity.badRequest()
+                .body(ApiResponse.of(ec, null));
     }
 
     @ExceptionHandler(MultipartException.class)
-    public ResponseEntity<ApiResponse<Object>> handleMultipartException(MultipartException e) {
-        // 크기 제한 관련 오류인지 확인
-        if (e.getMessage() != null && e.getMessage().contains("Maximum upload size exceeded")) {
+    public ResponseEntity<ApiResponse<Void>>
+    handleMultipartException(MultipartException e) {
+        // 타입 기반 안전한 분기
+        if (e instanceof MaxUploadSizeExceededException) {
             return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
-                    .body(ApiResponse.onFailure("FILE400", "파일 크기가 제한을 초과했습니다.", null));
+                    .body(ApiResponse.of(ErrorStatus.FILE_SIZE_EXCEEDED, null));
         }
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.onFailure("FILE400", "파일 업로드 중 오류가 발생했습니다.", null));
+        // 기타 Multipart 에러
+        return ResponseEntity.badRequest()
+                .body(ApiResponse.of(ErrorStatus.FILE_UPLOAD_ERROR, null));
     }
 
     // 그 외 모든 예외
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<ApiResponse<Void>> handleAll(Exception ex, HttpServletRequest req) {
-        ex.printStackTrace();
+        log.error("Unhandled exception at {} {}: {}", req.getMethod(), req.getRequestURI(), ex.getMessage(), ex);
         BaseErrorCode ec = ErrorStatus.INTERNAL_SERVER_ERROR;
         return ResponseEntity
                 .status(ec.getHttpStatus())
