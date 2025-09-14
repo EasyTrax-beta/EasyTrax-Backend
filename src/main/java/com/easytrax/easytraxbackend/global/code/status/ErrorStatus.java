@@ -16,6 +16,7 @@ public enum ErrorStatus implements BaseErrorCode {
     FILE_SIZE_EXCEEDED(HttpStatus.PAYLOAD_TOO_LARGE, "FILE4004", "파일 크기가 제한을 초과했습니다."),
     FILE_UPLOAD_ERROR(HttpStatus.BAD_REQUEST, "FILE4005", "파일 업로드 중 오류가 발생했습니다."),
     INVALID_FILE_TYPE(HttpStatus.BAD_REQUEST, "FILE4006", "지원하지 않는 파일 형식입니다."),
+    FILE_IS_EMPTY(HttpStatus.BAD_REQUEST, "FILE4007", "업로드할 파일이 없습니다."),
 
     // 401 Unauthorized
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "AUTH401", "인증이 필요합니다."),
@@ -43,6 +44,8 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // 500 Internal Server Error
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON500", "서버 에러, 관리자에게 문의 바랍니다."),
+    S3_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S35001", "파일 업로드 중 오류가 발생했습니다."),
+    S3_DELETE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S35002", "파일 삭제 중 오류가 발생했습니다."),
 
     // 502, 503, 504
     BAD_GATEWAY(HttpStatus.BAD_GATEWAY, "COMMON502", "불완전한 게이트웨이 응답을 받았습니다."),
