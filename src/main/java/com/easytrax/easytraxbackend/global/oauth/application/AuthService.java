@@ -52,13 +52,13 @@ public class AuthService {
             throw new GeneralException(ErrorStatus.INVALID_TOKEN);
         }
 
-        User user = userRepository.findByRefreshToken(oldRefreshToken)
+        User user = jwtService.findUserByRefreshToken(oldRefreshToken)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.EXPIRED_TOKEN));
 
         String newAccessToken = jwtService.createAccessToken(user.getEmail(), user.getId());
         String newRefreshToken = jwtService.createRefreshToken();
 
-        user.updateRefreshToken(newRefreshToken);
+        jwtService.updateRefreshToken(user.getEmail(), newRefreshToken);
 
         return new LoginResponse(newAccessToken, newRefreshToken);
     }
@@ -69,6 +69,6 @@ public class AuthService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
-        user.updateRefreshToken(null);
+        jwtService.updateRefreshToken(email, null);
     }
 }

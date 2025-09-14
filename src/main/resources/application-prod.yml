@@ -36,3 +36,6 @@ jwt:
   refresh:
     expiration: ${JWT_REFRESH_EXPIRATION}
     header: ${JWT_REFRESH_HEADER:RefreshToken}
+  kakao:
+    issuer: https://kauth.kakao.com
+    client-id: ${KAKAO_CLIENT_ID}

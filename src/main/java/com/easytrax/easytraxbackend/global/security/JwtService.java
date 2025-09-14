@@ -14,8 +14,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import java.util.Date;
 import java.util.Optional;
@@ -42,6 +47,7 @@ public class JwtService {
     private String refreshHeader;
 
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
     private static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
@@ -100,26 +106,30 @@ public class JwtService {
 
     public Optional<String> extractEmail(String accessToken) {
         try {
-            return Optional.ofNullable(JWT.require(Algorithm.HMAC512(secretKey))
+            String email = JWT.require(Algorithm.HMAC512(secretKey))
+                    .withSubject(ACCESS_TOKEN_SUBJECT)
                     .build()
                     .verify(accessToken)
                     .getClaim(EMAIL_CLAIM)
-                    .asString());
-        } catch (Exception e) {
-            log.error("유효하지 않은 Access Token 입니다. {}", e.getMessage());
+                    .asString();
+            return (email == null || email.isBlank()) ? Optional.empty() : Optional.of(email);
+        } catch (JWTVerificationException e) {
+            log.warn("유효하지 않은 Access Token 입니다. {}", e.getMessage());
             return Optional.empty();
         }
     }
 
     public Optional<Long> extractUserId(String accessToken) {
         try {
-            return Optional.ofNullable(JWT.require(Algorithm.HMAC512(secretKey))
+            Long userId = JWT.require(Algorithm.HMAC512(secretKey))
+                    .withSubject(ACCESS_TOKEN_SUBJECT)
                     .build()
                     .verify(accessToken)
                     .getClaim(USERID_CLAIM)
-                    .asLong());
-        } catch (Exception e) {
-            log.error("유효하지 않은 Access Token 입니다. {}", e.getMessage());
+                    .asLong();
+            return Optional.ofNullable(userId);
+        } catch (JWTVerificationException e) {
+            log.warn("유효하지 않은 Access Token 입니다. {}", e.getMessage());
             return Optional.empty();
         }
     }
@@ -128,7 +138,15 @@ public class JwtService {
     public void updateRefreshToken(String email, String refreshToken) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
-        user.updateRefreshToken(refreshToken);
+        String hashedRefreshToken = refreshToken != null ? hashRefreshToken(refreshToken) : null;
+        user.updateRefreshToken(hashedRefreshToken);
+    }
+
+    private String hashRefreshToken(String refreshToken) {
+        // SHA-256으로 먼저 해시하여 길이를 고정 (64 hex chars < 72 bytes)
+        String sha256Hash = getSha256Hash(refreshToken);
+        // SHA-256 결과를 BCrypt로 해시
+        return passwordEncoder.encode(sha256Hash);
     }
 
     public boolean isTokenValid(String token) {
@@ -143,11 +161,16 @@ public class JwtService {
 
     public String verifyTokenAndGetEmail(String token) {
         try {
-            return JWT.require(Algorithm.HMAC512(secretKey))
+            String email = JWT.require(Algorithm.HMAC512(secretKey))
+                    .withSubject(ACCESS_TOKEN_SUBJECT)
                     .build()
                     .verify(token)
                     .getClaim(EMAIL_CLAIM)
                     .asString();
+            if (email == null || email.isBlank()) {
+                throw new GeneralException(ErrorStatus.INVALID_TOKEN);
+            }
+            return email;
         } catch (TokenExpiredException e) {
             log.warn("만료된 토큰입니다. {}", e.getMessage());
             throw new GeneralException(ErrorStatus.EXPIRED_TOKEN);
@@ -159,17 +182,46 @@ public class JwtService {
 
     public Long verifyTokenAndGetUserId(String token) {
         try {
-            return JWT.require(Algorithm.HMAC512(secretKey))
+            Long userId = JWT.require(Algorithm.HMAC512(secretKey))
+                    .withSubject(ACCESS_TOKEN_SUBJECT)
                     .build()
                     .verify(token)
                     .getClaim(USERID_CLAIM)
                     .asLong();
+            if (userId == null) {
+                throw new GeneralException(ErrorStatus.INVALID_TOKEN);
+            }
+            return userId;
         } catch (TokenExpiredException e) {
             log.warn("만료된 토큰입니다. {}", e.getMessage());
             throw new GeneralException(ErrorStatus.EXPIRED_TOKEN);
         } catch (JWTVerificationException e) {
             log.warn("유효하지 않은 토큰입니다. {}", e.getMessage());
             throw new GeneralException(ErrorStatus.INVALID_TOKEN);
+        }
+    }
+
+    public Optional<User> findUserByRefreshToken(String refreshToken) {
+        String sha256Hash = getSha256Hash(refreshToken);
+        return userRepository.findByRefreshTokenIsNotNull()
+                .stream()
+                .filter(user -> passwordEncoder.matches(sha256Hash, user.getRefreshToken()))
+                .findFirst();
+    }
+
+    private String getSha256Hash(String input) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashedBytes = digest.digest(input.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hashedBytes) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("SHA-256 알고리즘을 찾을 수 없습니다.", e);
         }
     }
 }

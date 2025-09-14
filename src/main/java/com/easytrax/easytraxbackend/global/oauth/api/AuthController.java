@@ -47,11 +47,16 @@ public class AuthController {
     @PostMapping("/reissue")
     public ResponseEntity<ApiResponse<LoginResponse>> reissueTokens(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader,
-            @Parameter(description = "Refresh Token (Bearer 스키마 제외)", required = true)
+            @Parameter(description = "Refresh Token (Bearer 스키마 포함/제외 모두 허용)", required = true)
             @RequestHeader("RefreshToken") String refreshToken) {
 
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.onFailure("AUTH401", "유효하지 않은 Authorization 헤더입니다.", null));
+        }
         String accessToken = authorizationHeader.substring(7);  // "Bearer " 제거
-        LoginResponse newTokens = authService.reissueTokens(accessToken, refreshToken);
+        String normalizedRefresh = refreshToken != null && refreshToken.startsWith("Bearer ") ? refreshToken.substring(7) : refreshToken;
+        LoginResponse newTokens = authService.reissueTokens(accessToken, normalizedRefresh);
         return ResponseEntity.ok(ApiResponse.onSuccess(newTokens));
     }
 
@@ -60,8 +65,13 @@ public class AuthController {
     public ResponseEntity<ApiResponse<Void>> logout(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader,
             @RequestHeader("RefreshToken") String refreshToken) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.onFailure("AUTH401", "유효하지 않은 Authorization 헤더입니다.", null));
+        }
         String accessToken = authorizationHeader.substring(7);
-        authService.logout(accessToken, refreshToken);
+        String normalizedRefresh = refreshToken != null && refreshToken.startsWith("Bearer ") ? refreshToken.substring(7) : refreshToken;
+        authService.logout(accessToken, normalizedRefresh);
         return ResponseEntity.ok(ApiResponse.onSuccess(null));
     }
 }

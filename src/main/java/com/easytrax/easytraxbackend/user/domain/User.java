@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Table(name = "users")
+@Table(name = "users", indexes = {
+        @Index(name = "idx_refresh_token", columnList = "refresh_token")
+})
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
