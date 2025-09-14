@@ -10,7 +10,6 @@ import com.easytrax.easytraxbackend.user.domain.User;
 import com.easytrax.easytraxbackend.user.domain.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,13 +20,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
 import java.util.Date;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Getter
 @Slf4j
 public class JwtService {
 
@@ -143,10 +140,7 @@ public class JwtService {
     }
 
     private String hashRefreshToken(String refreshToken) {
-        // SHA-256으로 먼저 해시하여 길이를 고정 (64 hex chars < 72 bytes)
-        String sha256Hash = getSha256Hash(refreshToken);
-        // SHA-256 결과를 BCrypt로 해시
-        return passwordEncoder.encode(sha256Hash);
+        return getSha256Hash(refreshToken);
     }
 
     public boolean isTokenValid(String token) {
@@ -203,10 +197,7 @@ public class JwtService {
 
     public Optional<User> findUserByRefreshToken(String refreshToken) {
         String sha256Hash = getSha256Hash(refreshToken);
-        return userRepository.findByRefreshTokenIsNotNull()
-                .stream()
-                .filter(user -> passwordEncoder.matches(sha256Hash, user.getRefreshToken()))
-                .findFirst();
+        return userRepository.findByRefreshToken(sha256Hash);
     }
 
     private String getSha256Hash(String input) {

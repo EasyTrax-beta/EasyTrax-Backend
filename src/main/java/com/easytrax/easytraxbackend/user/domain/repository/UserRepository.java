@@ -14,5 +14,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findBySocialProviderAndOauthId(SocialProvider socialProvider, String oauthId);
 
-    List<User> findByRefreshTokenIsNotNull();
 }
