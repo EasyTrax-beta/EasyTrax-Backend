@@ -39,7 +39,7 @@ public class IdTokenService {
             User findUser = checkUser(idTokenAttributes);
 
             return new CustomUserDetails(
-                    Collections.singleton(new SimpleGrantedAuthority(findUser.getRoleType().toString())),
+                    Collections.singleton(new SimpleGrantedAuthority(findUser.getRoleType().getKey())),
                     findUser.getEmail(),
                     findUser.getRoleType(),
                     findUser.getId()
@@ -56,7 +56,10 @@ public class IdTokenService {
     }
 
     private User checkUser(IdTokenAttributes idTokenAttributes) {
-        User findUser = userRepository.findByEmail(idTokenAttributes.getUserInfo().getEmail()).orElse(null);
+        String email = idTokenAttributes.getUserInfo().getEmail()
+                .orElseThrow(() -> new GeneralException(ErrorStatus.INVALID_TOKEN));
+        
+        User findUser = userRepository.findByEmail(email).orElse(null);
         if (findUser == null) {
             return createUser(idTokenAttributes);
         }

@@ -10,6 +10,7 @@ import com.easytrax.easytraxbackend.user.domain.User;
 import com.easytrax.easytraxbackend.user.domain.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,16 +23,18 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Getter
 @Slf4j
 public class JwtService {
 
+    @Getter(AccessLevel.NONE)
     @Value("${jwt.secretKey}")
     private String secretKey;
 
+    @Getter(AccessLevel.NONE)
     @Value("${jwt.access.expiration}")
     private Long accessTokenExpirationPeriod;
 
+    @Getter(AccessLevel.NONE)
     @Value("${jwt.refresh.expiration}")
     private Long refreshTokenExpirationPeriod;
 
@@ -83,7 +86,7 @@ public class JwtService {
 
     public Optional<String> extractToken(String bearerToken) {
         if (bearerToken != null && bearerToken.startsWith(BEARER_PREFIX)) {
-            return Optional.of(bearerToken.replace(BEARER_PREFIX, ""));
+            return Optional.of(bearerToken.substring(BEARER_PREFIX.length()));
         }
         return Optional.empty();
     }

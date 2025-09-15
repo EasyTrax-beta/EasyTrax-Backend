@@ -36,3 +36,7 @@ jwt:
   refresh:
     expiration: ${JWT_REFRESH_EXPIRATION}
     header: ${JWT_REFRESH_HEADER:RefreshToken}
+
+oauth:
+  kakao:
+    audience: ${KAKAO_AUDIENCE}

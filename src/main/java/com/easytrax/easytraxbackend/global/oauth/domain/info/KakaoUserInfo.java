@@ -1,6 +1,7 @@
 package com.easytrax.easytraxbackend.global.oauth.domain.info;
 
 import java.util.Map;
+import java.util.Optional;
 
 public class KakaoUserInfo extends UserInfo {
 
@@ -14,8 +15,8 @@ public class KakaoUserInfo extends UserInfo {
     }
 
     @Override
-    public String getEmail() {
-        return (String) attributes.get("email");
+    public Optional<String> getEmail() {
+        return Optional.ofNullable((String) attributes.get("email"));
     }
 
     @Override

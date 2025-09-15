@@ -21,13 +21,14 @@ public class IdTokenAttributes {
     }
 
     public User toUser() {
+        String email = userInfo.getEmail().orElse(null);
         return User.builder()
                 .socialProvider(socialProvider)
                 .roleType(RoleType.USER)
                 .oauthId(userInfo.getId())
                 .nickname(userInfo.getNickname())
                 .profileImageUrl(userInfo.getProfileImageUrl())
-                .email(userInfo.getEmail())
+                .email(email)
                 .lastLoginAt(LocalDateTime.now())
                 .build();
     }

@@ -55,6 +55,12 @@ public class AuthService {
         User user = userRepository.findByRefreshToken(oldRefreshToken)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.EXPIRED_TOKEN));
 
+        // AccessToken과 사용자 일치 검증
+        Long userIdFromAccess = jwtService.verifyTokenAndGetUserId(oldAccessToken);
+        if (!user.getId().equals(userIdFromAccess)) {
+            throw new GeneralException(ErrorStatus.INVALID_TOKEN);
+        }
+
         String newAccessToken = jwtService.createAccessToken(user.getEmail(), user.getId());
         String newRefreshToken = jwtService.createRefreshToken();
 
@@ -64,7 +70,7 @@ public class AuthService {
     }
 
     @Transactional
-    public void logout(String accessToken, String refreshToken) {
+    public void logout(String accessToken) {
         String email = jwtService.verifyTokenAndGetEmail(accessToken);
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));

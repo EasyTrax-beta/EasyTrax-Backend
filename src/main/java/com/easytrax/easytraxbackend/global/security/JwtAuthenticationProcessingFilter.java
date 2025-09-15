@@ -1,5 +1,6 @@
 package com.easytrax.easytraxbackend.global.security;
 
+import com.easytrax.easytraxbackend.global.exception.GeneralException;
 import com.easytrax.easytraxbackend.user.domain.User;
 import com.easytrax.easytraxbackend.user.domain.repository.UserRepository;
 import jakarta.servlet.FilterChain;
@@ -32,7 +33,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        if (request.getRequestURI().equals("/auth/login")) {
+        if (request.getRequestURI().startsWith("/api/auth/login")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -68,15 +69,18 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     public void checkAccessTokenAndAuthentication(HttpServletRequest request, HttpServletResponse response,
                                                   FilterChain filterChain) throws ServletException, IOException {
 
-        jwtService.extractAccessToken(request)
-                .ifPresent(accessToken -> {
-                    String email = jwtService.verifyTokenAndGetEmail(accessToken);
-                    userRepository.findByEmail(email)
-                            .ifPresent(user -> {
-                                log.info("JWT 인증 성공 - userId: {}", user.getId());
-                                saveAuthentication(user);
-                            });
+        jwtService.extractAccessToken(request).ifPresent(accessToken -> {
+            try {
+                String email = jwtService.verifyTokenAndGetEmail(accessToken);
+                userRepository.findByEmail(email).ifPresent(user -> {
+                    log.info("JWT 인증 성공 - userId: {}", user.getId());
+                    saveAuthentication(user);
                 });
+            } catch (GeneralException ex) {
+                // 인증 실패는 익명으로 계속 진행
+                log.debug("AccessToken 인증 실패: {}", ex.getMessage());
+            }
+        });
 
         filterChain.doFilter(request, response);
     }
