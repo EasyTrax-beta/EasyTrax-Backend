@@ -66,18 +66,25 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
         return reIssuedRefreshToken;
     }
 
-    public void checkAccessTokenAndAuthentication(HttpServletRequest request, HttpServletResponse response,
-                                                  FilterChain filterChain) throws ServletException, IOException {
+    public void checkAccessTokenAndAuthentication(HttpServletRequest request,
+                                                  HttpServletResponse response,
+                                                  FilterChain filterChain) throws
+            ServletException, IOException {
 
         jwtService.extractAccessToken(request).ifPresent(accessToken -> {
             try {
+                // 블랙리스트 검증 추가
+                if (!jwtService.isTokenValid(accessToken)) {
+                    log.debug("블랙리스트에 포함된 토큰이거나 유효하지 않은 토큰입니다.");
+                    return;
+                }
+
                 String email = jwtService.verifyTokenAndGetEmail(accessToken);
                 userRepository.findByEmail(email).ifPresent(user -> {
                     log.info("JWT 인증 성공 - userId: {}", user.getId());
                     saveAuthentication(user);
                 });
             } catch (GeneralException ex) {
-                // 인증 실패는 익명으로 계속 진행
                 log.debug("AccessToken 인증 실패: {}", ex.getMessage());
             }
         });
