@@ -26,3 +26,9 @@ springdoc:
 logging:
   level:
     com.easytrax.easytraxbackend: info
+
+# OAuth Configuration
+oauth:
+  kakao:
+    issuer: ${KAKAO_ISSUER:https://kauth.kakao.com}
+    jwks-uri: ${KAKAO_JWKS_URI:https://kauth.kakao.com/.well-known/jwks.json}
