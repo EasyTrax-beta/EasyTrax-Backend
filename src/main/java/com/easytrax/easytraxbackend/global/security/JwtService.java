@@ -155,6 +155,12 @@ public class JwtService {
     }
 
     public String verifyTokenAndGetEmail(String token) {
+        // TOCTOU 방지를 위한 블랙리스트 체크
+        if (tokenBlacklistService.isBlacklisted(token)) {
+            log.warn("블랙리스트에 포함된 토큰입니다.");
+            throw new GeneralException(ErrorStatus.INVALID_TOKEN);
+        }
+
         try {
             return JWT.require(Algorithm.HMAC512(secretKey))
                     .build()
@@ -171,6 +177,11 @@ public class JwtService {
     }
 
     public Long verifyTokenAndGetUserId(String token) {
+        // TOCTOU 방지를 위한 블랙리스트 체크
+        if (tokenBlacklistService.isBlacklisted(token)) {
+            log.warn("블랙리스트에 포함된 토큰입니다.");
+            throw new GeneralException(ErrorStatus.INVALID_TOKEN);
+        }
         try {
             return JWT.require(Algorithm.HMAC512(secretKey))
                     .build()
