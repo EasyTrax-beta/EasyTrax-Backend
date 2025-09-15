@@ -2,8 +2,10 @@ package com.easytrax.easytraxbackend.global.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.easytrax.easytraxbackend.global.code.status.ErrorStatus;
 import com.easytrax.easytraxbackend.global.exception.GeneralException;
 import com.easytrax.easytraxbackend.user.domain.User;
@@ -173,6 +175,21 @@ public class JwtService {
         } catch (JWTVerificationException e) {
             log.warn("유효하지 않은 토큰입니다. {}", e.getMessage());
             throw new GeneralException(ErrorStatus.INVALID_TOKEN);
+        }
+    }
+
+    public Long getUserIdAllowExpired(String token) {
+        try {
+            return verifyTokenAndGetUserId(token); // 유효한 경우 그대로 사용
+        } catch (GeneralException e) {
+            try {
+                DecodedJWT decoded = JWT.decode(token);
+                Long uid = decoded.getClaim(USERID_CLAIM).asLong();
+                if (uid == null) throw new GeneralException(ErrorStatus.INVALID_TOKEN);
+                return uid;
+            } catch (JWTDecodeException ex) {
+                throw new GeneralException(ErrorStatus.INVALID_TOKEN);
+            }
         }
     }
 }

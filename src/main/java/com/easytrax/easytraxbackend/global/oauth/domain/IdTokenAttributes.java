@@ -8,16 +8,21 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Objects;
 
 @Getter
 public class IdTokenAttributes {
 
-    private UserInfo userInfo;
-    private SocialProvider socialProvider;
+    private final UserInfo userInfo;
+    private final SocialProvider socialProvider;
 
     public IdTokenAttributes(Map<String, Object> attributes, SocialProvider socialProvider){
-        this.socialProvider = socialProvider;
-        if(socialProvider == SocialProvider.KAKAO) this.userInfo = new KakaoUserInfo(attributes);
+        this.socialProvider = Objects.requireNonNull(socialProvider, "socialProvider");
+        Objects.requireNonNull(attributes, "attributes");
+        switch (this.socialProvider) {
+            case KAKAO -> this.userInfo = new KakaoUserInfo(attributes);
+            default -> throw new IllegalArgumentException("Unsupported social provider: " + this.socialProvider);
+        }
     }
 
     public User toUser() {

@@ -55,8 +55,8 @@ public class AuthService {
         User user = userRepository.findByRefreshToken(oldRefreshToken)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.EXPIRED_TOKEN));
 
-        // AccessToken과 사용자 일치 검증
-        Long userIdFromAccess = jwtService.verifyTokenAndGetUserId(oldAccessToken);
+        // AccessToken과 사용자 일치 검증 (만료 허용)
+        Long userIdFromAccess = jwtService.getUserIdAllowExpired(oldAccessToken);
         if (!user.getId().equals(userIdFromAccess)) {
             throw new GeneralException(ErrorStatus.INVALID_TOKEN);
         }

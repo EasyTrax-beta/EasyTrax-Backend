@@ -15,11 +15,17 @@ import java.util.List;
 public class JwtConfig {
 
     @Bean
-    public JwtDecoder kakaoJwtDecoder(@Value("${oauth.kakao.audience}") String audience) {
-        String kakaoJwkSetUri = "https://kauth.kakao.com/.well-known/jwks.json";
-        NimbusJwtDecoder decoder = NimbusJwtDecoder.withJwkSetUri(kakaoJwkSetUri).build();
+    public JwtDecoder kakaoJwtDecoder(
+            @Value("${oauth.kakao.audience}") String audience,
+            @Value("${oauth.kakao.issuer:https://kauth.kakao.com}") String issuer,
+            @Value("${oauth.kakao.jwks-uri:https://kauth.kakao.com/.well-known/jwks.json}") String jwkSetUri
+    ) {
+        NimbusJwtDecoder decoder = NimbusJwtDecoder
+                .withJwkSetUri(jwkSetUri)
+                .jwsAlgorithm(org.springframework.security.oauth2.jose.jws.SignatureAlgorithm.RS256)
+                .build();
 
-        OAuth2TokenValidator<Jwt> withIssuer = JwtValidators.createDefaultWithIssuer("https://kauth.kakao.com");
+        OAuth2TokenValidator<Jwt> withIssuer = JwtValidators.createDefaultWithIssuer(issuer);
         OAuth2TokenValidator<Jwt> withAud = jwt -> {
             List<String> aud = jwt.getAudience();
             if (aud != null && aud.contains(audience)) {
