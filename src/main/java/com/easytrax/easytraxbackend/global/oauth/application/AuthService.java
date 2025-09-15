@@ -6,6 +6,7 @@ import com.easytrax.easytraxbackend.global.oauth.api.dto.response.LoginResponse;
 import com.easytrax.easytraxbackend.global.oauth.api.dto.response.UserInfoResponse;
 import com.easytrax.easytraxbackend.global.security.CustomUserDetails;
 import com.easytrax.easytraxbackend.global.security.JwtService;
+import com.easytrax.easytraxbackend.global.security.TokenBlacklistService;
 import com.easytrax.easytraxbackend.user.domain.User;
 import com.easytrax.easytraxbackend.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final IdTokenService idTokenService;
     private final JwtService jwtService;
+    private final TokenBlacklistService tokenBlacklistService;
 
     @Transactional
     public LoginResponse login(String idToken) {
@@ -75,6 +77,10 @@ public class AuthService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
+        // 액세스 토큰을 블랙리스트에 추가
+        tokenBlacklistService.addToBlacklist(accessToken);
+
+        // 리프레시 토큰 무효화
         user.updateRefreshToken(null);
     }
 }

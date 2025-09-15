@@ -47,6 +47,7 @@ public class JwtService {
     private String refreshHeader;
 
     private final UserRepository userRepository;
+    private final TokenBlacklistService tokenBlacklistService;
 
     private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
     private static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
@@ -137,6 +138,13 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String token) {
+        // 블랙리스트 확인
+        if (tokenBlacklistService.isBlacklisted(token)) {
+            log.warn("블랙리스트에 포함된 토큰입니다.");
+            return false;
+        }
+
+        // 기존 검증 로직
         try {
             JWT.require(Algorithm.HMAC512(secretKey)).build().verify(token);
             return true;
@@ -147,6 +155,12 @@ public class JwtService {
     }
 
     public String verifyTokenAndGetEmail(String token) {
+        // TOCTOU 방지를 위한 블랙리스트 체크
+        if (tokenBlacklistService.isBlacklisted(token)) {
+            log.warn("블랙리스트에 포함된 토큰입니다.");
+            throw new GeneralException(ErrorStatus.INVALID_TOKEN);
+        }
+
         try {
             return JWT.require(Algorithm.HMAC512(secretKey))
                     .build()
@@ -163,6 +177,11 @@ public class JwtService {
     }
 
     public Long verifyTokenAndGetUserId(String token) {
+        // TOCTOU 방지를 위한 블랙리스트 체크
+        if (tokenBlacklistService.isBlacklisted(token)) {
+            log.warn("블랙리스트에 포함된 토큰입니다.");
+            throw new GeneralException(ErrorStatus.INVALID_TOKEN);
+        }
         try {
             return JWT.require(Algorithm.HMAC512(secretKey))
                     .build()

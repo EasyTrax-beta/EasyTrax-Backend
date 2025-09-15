@@ -44,6 +44,8 @@ dependencies {
     implementation 'com.auth0:java-jwt:4.5.0'
     // OAuth
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 tasks.named('test') {
