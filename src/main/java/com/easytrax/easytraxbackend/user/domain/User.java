@@ -1,5 +1,6 @@
 package com.easytrax.easytraxbackend.user.domain;
 
+import com.easytrax.easytraxbackend.global.entity.BaseEntity;
 import com.easytrax.easytraxbackend.global.oauth.domain.SocialProvider;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User {
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
