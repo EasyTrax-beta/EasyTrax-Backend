@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum Country {
+    KOREA("한국", "KR"),
     CHINA("중국", "CN"),
     USA("미국", "US"),
     JAPAN("일본", "JP"),

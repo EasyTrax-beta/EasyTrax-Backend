@@ -52,3 +52,10 @@ jwt:
 oauth:
   kakao:
     audience: ${KAKAO_AUDIENCE}
+
+# Google Gemini API Configuration (Production)
+gemini:
+  api:
+    key: ${GEMINI_API_KEY}
+    model: gemini-2.5-flash-lite
+    base-url: https://generativelanguage.googleapis.com
