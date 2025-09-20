@@ -46,6 +46,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     // Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    // PDF generation
+    implementation 'com.itextpdf:itext7-core:8.0.2'
+    implementation 'com.itextpdf:html2pdf:5.0.2'
 }
 
 tasks.named('test') {
