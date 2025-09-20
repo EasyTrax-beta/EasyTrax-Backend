@@ -109,11 +109,12 @@ public class HSCodeClassificationService {
     }
 
     private String callGeminiForClassification(String prompt) {
-        String url = String.format("%s/v1beta/models/%s:generateContent?key=%s",
-                geminiConfig.getBaseUrl(), geminiConfig.getModel(), geminiConfig.getKey());
+        String url = String.format("%s/v1beta/models/%s:generateContent",
+                geminiConfig.getBaseUrl(), geminiConfig.getModel());
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("x-goog-api-key", geminiConfig.getKey());
 
         Map<String, Object> requestBody = new HashMap<>();
         Map<String, Object> part = new HashMap<>();
