@@ -317,7 +317,7 @@ public class NutritionLabelPdfService {
                 "-",
                 formatValue(nutritionLabel.getTransFat()),
                 formatValue(nutritionLabel.getTotalCarbohydrate()),
-                calculateChinaDailyValue(nutritionLabel.getTotalCarbohydrate(), new BigDecimal("275")),
+                calculateChinaDailyValue(nutritionLabel.getTotalCarbohydrate(), new BigDecimal("300")),
                 formatValue(nutritionLabel.getTotalSugars()),
                 formatValue(nutritionLabel.getDietaryFiber()),
                 "-",

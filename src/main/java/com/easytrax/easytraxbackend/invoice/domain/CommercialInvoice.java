@@ -176,7 +176,9 @@ public class CommercialInvoice extends BaseEntity {
     }
 
     public void removeItem(CommercialInvoiceItem item) {
-        items.remove(item);
-        calculateTotalAmount();
+        if (items.remove(item)) {
+            item.assignCommercialInvoice(null);
+            calculateTotalAmount();
+        }
     }
 }
