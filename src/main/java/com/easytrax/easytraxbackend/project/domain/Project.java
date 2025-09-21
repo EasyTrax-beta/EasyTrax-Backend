@@ -77,11 +77,11 @@ public class Project extends BaseEntity {
     }
 
     public void updateStatus(ProjectStatus status) {
-        this.status = status;
+        if (status != null) this.status = status;
     }
 
     public void updateProgress(Integer progressPercentage) {
-        if (progressPercentage >= 0 && progressPercentage <= 100) {
+        if (progressPercentage != null && progressPercentage >= 0 && progressPercentage <= 100) {
             this.progressPercentage = progressPercentage;
         }
     }

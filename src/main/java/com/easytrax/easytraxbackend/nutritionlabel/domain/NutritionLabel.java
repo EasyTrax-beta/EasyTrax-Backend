@@ -133,27 +133,27 @@ public class NutritionLabel extends BaseEntity {
                                    BigDecimal vitaminD, BigDecimal calcium, BigDecimal iron,
                                    BigDecimal potassium, BigDecimal vitaminA, BigDecimal vitaminC,
                                    LabelFormat labelFormat) {
-        this.productName = productName;
-        this.servingSize = servingSize;
-        this.servingsPerContainer = servingsPerContainer;
-        this.calories = calories;
-        this.caloriesFromFat = caloriesFromFat;
-        this.totalFat = totalFat;
-        this.saturatedFat = saturatedFat;
-        this.transFat = transFat;
-        this.cholesterol = cholesterol;
-        this.sodium = sodium;
-        this.totalCarbohydrate = totalCarbohydrate;
-        this.dietaryFiber = dietaryFiber;
-        this.totalSugars = totalSugars;
-        this.addedSugars = addedSugars;
-        this.protein = protein;
-        this.vitaminD = vitaminD;
-        this.calcium = calcium;
-        this.iron = iron;
-        this.potassium = potassium;
-        this.vitaminA = vitaminA;
-        this.vitaminC = vitaminC;
-        this.labelFormat = labelFormat;
+        if (productName != null) this.productName = productName;
+        if (servingSize != null) this.servingSize = servingSize;
+        if (servingsPerContainer != null) this.servingsPerContainer = servingsPerContainer;
+        if (calories != null) this.calories = calories;
+        if (caloriesFromFat != null) this.caloriesFromFat = caloriesFromFat;
+        if (totalFat != null) this.totalFat = totalFat;
+        if (saturatedFat != null) this.saturatedFat = saturatedFat;
+        if (transFat != null) this.transFat = transFat;
+        if (cholesterol != null) this.cholesterol = cholesterol;
+        if (sodium != null) this.sodium = sodium;
+        if (totalCarbohydrate != null) this.totalCarbohydrate = totalCarbohydrate;
+        if (dietaryFiber != null) this.dietaryFiber = dietaryFiber;
+        if (totalSugars != null) this.totalSugars = totalSugars;
+        if (addedSugars != null) this.addedSugars = addedSugars;
+        if (protein != null) this.protein = protein;
+        if (vitaminD != null) this.vitaminD = vitaminD;
+        if (calcium != null) this.calcium = calcium;
+        if (iron != null) this.iron = iron;
+        if (potassium != null) this.potassium = potassium;
+        if (vitaminA != null) this.vitaminA = vitaminA;
+        if (vitaminC != null) this.vitaminC = vitaminC;
+        if (labelFormat != null) this.labelFormat = labelFormat;
     }
 }

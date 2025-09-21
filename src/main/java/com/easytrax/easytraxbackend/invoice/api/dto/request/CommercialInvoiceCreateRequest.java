@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -25,27 +26,33 @@ public record CommercialInvoiceCreateRequest(
 
         @Schema(description = "발송인/판매자 이름", example = "중합 테스트 수출회사")
         @NotBlank(message = "발송인/판매자 이름은 필수입니다")
+        @Size(max = 255, message = "발송인/판매자 이름은 255자를 초과할 수 없습니다")
         String shipperSellerName,
 
         @Schema(description = "발송인/판매자 주소", example = "서울시 강남구 테스트로 999")
         @NotBlank(message = "발송인/판매자 주소는 필수입니다")
+        @Size(max = 500, message = "발송인/판매자 주소는 500자를 초과할 수 없습니다")
         String shipperSellerAddress,
 
         @Schema(description = "발송인/판매자 연락처", example = "02-9999-8888")
         String shipperSellerPhone,
 
         @Schema(description = "수취인 이름", example = "")
+        @Size(max = 255, message = "수취인 이름은 255자를 초과할 수 없습니다")
         String consigneeName,
 
         @Schema(description = "수취인 주소", example = "")
+        @Size(max = 500, message = "수취인 주소는 500자를 초과할 수 없습니다")
         String consigneeAddress,
 
         @Schema(description = "구매자 이름", example = "중합 테스트 수입회사")
         @NotBlank(message = "구매자 이름은 필수입니다")
+        @Size(max = 255, message = "구매자 이름은 255자를 초과할 수 없습니다")
         String buyerName,
 
         @Schema(description = "구매자 주소", example = "중국 상하이시 테스트구 888호")
         @NotBlank(message = "구매자 주소는 필수입니다")
+        @Size(max = 500, message = "구매자 주소는 500자를 초과할 수 없습니다")
         String buyerAddress,
 
         @Schema(description = "구매자 연락처", example = "+86-21-8888-9999")

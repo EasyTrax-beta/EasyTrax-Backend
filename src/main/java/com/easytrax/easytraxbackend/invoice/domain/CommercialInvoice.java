@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -137,34 +138,35 @@ public class CommercialInvoice extends BaseEntity {
                                       String vesselFlight, String fromCountry, String toDestination,
                                       String shippingMarks, String termsOfDelivery, String paymentTerms,
                                       String otherReferences, InvoiceFormat invoiceFormat) {
-        this.invoiceNumber = invoiceNumber;
-        this.invoiceDate = invoiceDate;
-        this.shipperSellerName = shipperSellerName;
-        this.shipperSellerAddress = shipperSellerAddress;
-        this.shipperSellerPhone = shipperSellerPhone;
-        this.consigneeName = consigneeName;
-        this.consigneeAddress = consigneeAddress;
-        this.buyerName = buyerName;
-        this.buyerAddress = buyerAddress;
-        this.buyerPhone = buyerPhone;
-        this.lcNumber = lcNumber;
-        this.lcDate = lcDate;
-        this.departureDate = departureDate;
-        this.vesselFlight = vesselFlight;
-        this.fromCountry = fromCountry;
-        this.toDestination = toDestination;
-        this.shippingMarks = shippingMarks;
-        this.termsOfDelivery = termsOfDelivery;
-        this.paymentTerms = paymentTerms;
-        this.otherReferences = otherReferences;
-        this.invoiceFormat = invoiceFormat != null ? invoiceFormat : InvoiceFormat.USA_STANDARD;
+        if (invoiceNumber != null) this.invoiceNumber = invoiceNumber;
+        if (invoiceDate != null) this.invoiceDate = invoiceDate;
+        if (shipperSellerName != null) this.shipperSellerName = shipperSellerName;
+        if (shipperSellerAddress != null) this.shipperSellerAddress = shipperSellerAddress;
+        if (shipperSellerPhone != null) this.shipperSellerPhone = shipperSellerPhone;
+        if (consigneeName != null) this.consigneeName = consigneeName;
+        if (consigneeAddress != null) this.consigneeAddress = consigneeAddress;
+        if (buyerName != null) this.buyerName = buyerName;
+        if (buyerAddress != null) this.buyerAddress = buyerAddress;
+        if (buyerPhone != null) this.buyerPhone = buyerPhone;
+        if (lcNumber != null) this.lcNumber = lcNumber;
+        if (lcDate != null) this.lcDate = lcDate;
+        if (departureDate != null) this.departureDate = departureDate;
+        if (vesselFlight != null) this.vesselFlight = vesselFlight;
+        if (fromCountry != null) this.fromCountry = fromCountry;
+        if (toDestination != null) this.toDestination = toDestination;
+        if (shippingMarks != null) this.shippingMarks = shippingMarks;
+        if (termsOfDelivery != null) this.termsOfDelivery = termsOfDelivery;
+        if (paymentTerms != null) this.paymentTerms = paymentTerms;
+        if (otherReferences != null) this.otherReferences = otherReferences;
+        if (invoiceFormat != null) this.invoiceFormat = invoiceFormat;
         calculateTotalAmount();
     }
 
     public void calculateTotalAmount() {
         this.totalAmount = items.stream()
                 .map(CommercialInvoiceItem::getTotalPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .setScale(2, RoundingMode.HALF_UP);
     }
 
     public void addItem(CommercialInvoiceItem item) {

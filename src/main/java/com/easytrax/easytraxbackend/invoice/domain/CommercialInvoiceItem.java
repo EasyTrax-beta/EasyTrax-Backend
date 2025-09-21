@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Table(name = "commercial_invoice_items")
 @Entity
@@ -58,16 +59,21 @@ public class CommercialInvoiceItem extends BaseEntity {
 
     public void updateItem(Integer packageCount, String packageType, String goodsDescription,
                           Integer quantity, BigDecimal unitPrice) {
-        this.packageCount = packageCount;
-        this.packageType = packageType;
-        this.goodsDescription = goodsDescription;
-        this.quantity = quantity;
-        this.unitPrice = unitPrice;
+        if (packageCount != null) this.packageCount = packageCount;
+        if (packageType != null) this.packageType = packageType;
+        if (goodsDescription != null) this.goodsDescription = goodsDescription;
+        if (quantity != null) this.quantity = quantity;
+        if (unitPrice != null) this.unitPrice = unitPrice;
         calculateAmount();
+        if (this.commercialInvoice != null) {
+            this.commercialInvoice.calculateTotalAmount();
+        }
     }
 
     private void calculateAmount() {
-        this.amount = unitPrice.multiply(BigDecimal.valueOf(quantity));
+        this.amount = unitPrice
+            .multiply(BigDecimal.valueOf(quantity))
+            .setScale(2, RoundingMode.HALF_UP);
     }
 
     public BigDecimal getTotalPrice() {

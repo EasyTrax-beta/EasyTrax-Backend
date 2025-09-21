@@ -6,6 +6,7 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
 
@@ -17,13 +18,16 @@ public record NutritionLabelCreateRequest(
 
         @Schema(description = "제품명", example = "Apple Juice")
         @NotBlank(message = "제품명은 필수입니다")
+        @Size(max = 255, message = "제품명은 255자를 초과할 수 없습니다")
         String productName,
 
         @Schema(description = "1회 제공량", example = "2/3 cup (55g)")
         @NotBlank(message = "1회 제공량은 필수입니다")
+        @Size(max = 255, message = "1회 제공량은 255자를 초과할 수 없습니다")
         String servingSize,
 
         @Schema(description = "총 제공 횟수", example = "8")
+        @NotNull(message = "총 제공 횟수는 필수입니다")
         @Min(value = 1, message = "총 제공 횟수는 1 이상이어야 합니다")
         Integer servingsPerContainer,
 

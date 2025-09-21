@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Service
 @RequiredArgsConstructor
@@ -159,11 +160,11 @@ public class NutritionLabelPdfService {
                 </body>
                 </html>
                 """,
-                nutritionLabel.getServingsPerContainer(),
+                intOrDefault(nutritionLabel.getServingsPerContainer(), 1),
                 nutritionLabel.getServingSize(),
                 nutritionLabel.getCalories(),
                 formatValue(nutritionLabel.getTotalFat()),
-                calculateDailyValue(nutritionLabel.getTotalFat(), new BigDecimal("65")),
+                calculateDailyValue(nutritionLabel.getTotalFat(), new BigDecimal("78")),
                 formatValue(nutritionLabel.getSaturatedFat()),
                 calculateDailyValue(nutritionLabel.getSaturatedFat(), new BigDecimal("20")),
                 formatValue(nutritionLabel.getTransFat()),
@@ -172,7 +173,7 @@ public class NutritionLabelPdfService {
                 formatValue(nutritionLabel.getSodium()),
                 calculateDailyValue(nutritionLabel.getSodium(), new BigDecimal("2300")),
                 formatValue(nutritionLabel.getTotalCarbohydrate()),
-                calculateDailyValue(nutritionLabel.getTotalCarbohydrate(), new BigDecimal("300")),
+                calculateDailyValue(nutritionLabel.getTotalCarbohydrate(), new BigDecimal("275")),
                 formatValue(nutritionLabel.getDietaryFiber()),
                 calculateDailyValue(nutritionLabel.getDietaryFiber(), new BigDecimal("28")),
                 formatValue(nutritionLabel.getTotalSugars()),
@@ -305,7 +306,7 @@ public class NutritionLabelPdfService {
                 </html>
                 """,
                 nutritionLabel.getServingSize(),
-                nutritionLabel.getServingsPerContainer(),
+                intOrDefault(nutritionLabel.getServingsPerContainer(), 1),
                 convertCaloriesToKilojoules(nutritionLabel.getCalories()),
                 calculateChinaDailyValue(convertCaloriesToKilojoules(nutritionLabel.getCalories()), 8400),
                 formatValue(nutritionLabel.getProtein()),
@@ -313,13 +314,13 @@ public class NutritionLabelPdfService {
                 formatValue(nutritionLabel.getTotalFat()),
                 calculateChinaDailyValue(nutritionLabel.getTotalFat(), new BigDecimal("60")),
                 formatValue(nutritionLabel.getSaturatedFat()),
-                calculateChinaDailyValue(nutritionLabel.getSaturatedFat(), new BigDecimal("20")),
+                "-",
                 formatValue(nutritionLabel.getTransFat()),
                 formatValue(nutritionLabel.getTotalCarbohydrate()),
-                calculateChinaDailyValue(nutritionLabel.getTotalCarbohydrate(), new BigDecimal("300")),
+                calculateChinaDailyValue(nutritionLabel.getTotalCarbohydrate(), new BigDecimal("275")),
                 formatValue(nutritionLabel.getTotalSugars()),
                 formatValue(nutritionLabel.getDietaryFiber()),
-                calculateChinaDailyValue(nutritionLabel.getDietaryFiber(), new BigDecimal("25")),
+                "-",
                 formatValue(nutritionLabel.getSodium()),
                 calculateChinaDailyValue(nutritionLabel.getSodium(), new BigDecimal("2000")),
                 formatValue(nutritionLabel.getCholesterol())
@@ -588,7 +589,7 @@ public class NutritionLabelPdfService {
             return 0;
         }
         return nutrientValue.multiply(new BigDecimal("100"))
-                .divide(dailyValue, 0, BigDecimal.ROUND_HALF_UP)
+                .divide(dailyValue, 0, RoundingMode.HALF_UP)
                 .intValue();
     }
 
@@ -597,7 +598,7 @@ public class NutritionLabelPdfService {
             return 0;
         }
         return nutrientValue.multiply(new BigDecimal("100"))
-                .divide(dailyValue, 0, BigDecimal.ROUND_HALF_UP)
+                .divide(dailyValue, 0, RoundingMode.HALF_UP)
                 .intValue();
     }
 
@@ -616,7 +617,7 @@ public class NutritionLabelPdfService {
             return 0;
         }
         return nutrientValue.multiply(new BigDecimal("100"))
-                .divide(dailyValue, 0, BigDecimal.ROUND_HALF_UP)
+                .divide(dailyValue, 0, RoundingMode.HALF_UP)
                 .intValue();
     }
 
@@ -635,12 +636,16 @@ public class NutritionLabelPdfService {
 
     private String formatSodiumToSalt(BigDecimal sodium) {
         if (sodium == null) return "0";
-        BigDecimal salt = sodium.multiply(new BigDecimal("2.54")).divide(new BigDecimal("1000"), 2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal salt = sodium.multiply(new BigDecimal("2.54")).divide(new BigDecimal("1000"), 2, RoundingMode.HALF_UP);
         return salt.stripTrailingZeros().toPlainString();
     }
 
     private BigDecimal convertSodiumToSaltValue(BigDecimal sodium) {
         if (sodium == null) return BigDecimal.ZERO;
-        return sodium.multiply(new BigDecimal("2.54")).divide(new BigDecimal("1000"), 2, BigDecimal.ROUND_HALF_UP);
+        return sodium.multiply(new BigDecimal("2.54")).divide(new BigDecimal("1000"), 2, RoundingMode.HALF_UP);
+    }
+
+    private int intOrDefault(Integer v, int d) { 
+        return v == null ? d : v; 
     }
 }

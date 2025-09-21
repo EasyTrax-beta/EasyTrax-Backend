@@ -14,11 +14,17 @@ public interface CommercialInvoiceRepository extends JpaRepository<CommercialInv
     @Query("SELECT c FROM CommercialInvoice c WHERE c.project.id = :projectId AND c.project.user.id = :userId")
     Page<CommercialInvoice> findByProjectIdAndUserId(@Param("projectId") Long projectId, @Param("userId") Long userId, Pageable pageable);
 
+    @Query("SELECT c FROM CommercialInvoice c LEFT JOIN FETCH c.items WHERE c.project.id = :projectId AND c.project.user.id = :userId")
+    Page<CommercialInvoice> findByProjectIdAndUserIdWithItems(@Param("projectId") Long projectId, @Param("userId") Long userId, Pageable pageable);
+
     @Query("SELECT c FROM CommercialInvoice c LEFT JOIN FETCH c.items WHERE c.id = :id AND c.project.user.id = :userId")
     Optional<CommercialInvoice> findByIdAndUserId(@Param("id") Long id, @Param("userId") Long userId);
 
     @Query("SELECT c FROM CommercialInvoice c WHERE c.project.user.id = :userId")
     Page<CommercialInvoice> findByUserId(@Param("userId") Long userId, Pageable pageable);
+
+    @Query("SELECT c FROM CommercialInvoice c LEFT JOIN FETCH c.items WHERE c.project.user.id = :userId")
+    Page<CommercialInvoice> findByUserIdWithItems(@Param("userId") Long userId, Pageable pageable);
 
     boolean existsByInvoiceNumber(String invoiceNumber);
 

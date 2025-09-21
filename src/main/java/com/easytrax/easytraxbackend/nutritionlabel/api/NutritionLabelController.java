@@ -11,6 +11,7 @@ import com.easytrax.easytraxbackend.nutritionlabel.application.NutritionLabelSer
 import com.easytrax.easytraxbackend.nutritionlabel.application.NutritionLabelPdfService;
 import com.easytrax.easytraxbackend.nutritionlabel.application.NutritionLabelOcrService;
 import com.easytrax.easytraxbackend.nutritionlabel.domain.LabelFormat;
+import com.easytrax.easytraxbackend.nutritionlabel.domain.NutritionLabel;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -148,14 +149,13 @@ public class NutritionLabelController {
             @Parameter(description = "영양성분표 ID") @PathVariable Long id,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         
-        NutritionLabelResponse nutritionLabel = nutritionLabelService.findNutritionLabelById(id, userDetails.getUserId());
-        byte[] pdfBytes = nutritionLabelPdfService.generateNutritionLabelPdf(
-                nutritionLabelService.findNutritionLabelByIdAndUserId(id, userDetails.getUserId()));
+        NutritionLabel nutritionLabel = nutritionLabelService.findNutritionLabelByIdAndUserId(id, userDetails.getUserId());
+        byte[] pdfBytes = nutritionLabelPdfService.generateNutritionLabelPdf(nutritionLabel);
         
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
         headers.setContentDispositionFormData("attachment", 
-                "nutrition_label_" + nutritionLabel.productName() + ".pdf");
+                "nutrition_label_" + nutritionLabel.getProductName() + ".pdf");
         
         return ResponseEntity.ok()
                 .headers(headers)
