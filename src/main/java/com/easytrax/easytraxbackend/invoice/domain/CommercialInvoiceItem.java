@@ -29,6 +29,12 @@ public class CommercialInvoiceItem extends BaseEntity {
     @Column(name = "goods_description", nullable = false, length = 500)
     private String goodsDescription;
 
+    @Column(name = "hs_code", nullable = false, length = 20)
+    private String hsCode;
+
+    @Column(name = "country_of_origin", nullable = false, length = 100)
+    private String countryOfOrigin;
+
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
@@ -44,10 +50,12 @@ public class CommercialInvoiceItem extends BaseEntity {
 
     @Builder
     public CommercialInvoiceItem(Integer packageCount, String packageType, String goodsDescription,
-                               Integer quantity, BigDecimal unitPrice) {
+                               String hsCode, String countryOfOrigin, Integer quantity, BigDecimal unitPrice) {
         this.packageCount = packageCount;
         this.packageType = packageType;
         this.goodsDescription = goodsDescription;
+        this.hsCode = hsCode;
+        this.countryOfOrigin = countryOfOrigin;
         this.quantity = quantity;
         this.unitPrice = unitPrice;
         calculateAmount();
@@ -58,10 +66,12 @@ public class CommercialInvoiceItem extends BaseEntity {
     }
 
     public void updateItem(Integer packageCount, String packageType, String goodsDescription,
-                          Integer quantity, BigDecimal unitPrice) {
+                          String hsCode, String countryOfOrigin, Integer quantity, BigDecimal unitPrice) {
         if (packageCount != null) this.packageCount = packageCount;
         if (packageType != null) this.packageType = packageType;
         if (goodsDescription != null) this.goodsDescription = goodsDescription;
+        if (hsCode != null) this.hsCode = hsCode;
+        if (countryOfOrigin != null) this.countryOfOrigin = countryOfOrigin;
         if (quantity != null) this.quantity = quantity;
         if (unitPrice != null) this.unitPrice = unitPrice;
         calculateAmount();

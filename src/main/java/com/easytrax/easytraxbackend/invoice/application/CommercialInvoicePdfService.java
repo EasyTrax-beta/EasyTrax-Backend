@@ -29,11 +29,14 @@ public class CommercialInvoicePdfService {
         StringBuilder itemsHtml = new StringBuilder();
         
         for (CommercialInvoiceItem item : invoice.getItems()) {
+            String hsCode = item.getHsCode() != null ? item.getHsCode() : "N/A";
+            String countryOfOrigin = item.getCountryOfOrigin() != null ? item.getCountryOfOrigin() : "N/A";
+            
             itemsHtml.append(String.format("""
                     <tr>
                         <td style="border: 1px solid black; padding: 5px; text-align: center;">%d</td>
                         <td style="border: 1px solid black; padding: 5px; text-align: center;">%s</td>
-                        <td style="border: 1px solid black; padding: 5px;">%s</td>
+                        <td style="border: 1px solid black; padding: 5px;">%s<br><small>HS Code: %s<br>Origin: %s</small></td>
                         <td style="border: 1px solid black; padding: 5px; text-align: center;">%d</td>
                         <td style="border: 1px solid black; padding: 5px; text-align: right;">$%.2f</td>
                         <td style="border: 1px solid black; padding: 5px; text-align: right;">$%.2f</td>
@@ -42,6 +45,8 @@ public class CommercialInvoicePdfService {
                     item.getPackageCount(),
                     item.getPackageType(),
                     item.getGoodsDescription(),
+                    hsCode,
+                    countryOfOrigin,
                     item.getQuantity(),
                     item.getUnitPrice(),
                     item.getAmount()
@@ -219,11 +224,14 @@ public class CommercialInvoicePdfService {
         StringBuilder itemsHtml = new StringBuilder();
         
         for (CommercialInvoiceItem item : invoice.getItems()) {
+            String hsCode = item.getHsCode() != null ? item.getHsCode() : "N/A";
+            String countryOfOrigin = item.getCountryOfOrigin() != null ? item.getCountryOfOrigin() : "N/A";
+            
             itemsHtml.append(String.format("""
                     <tr>
                         <td style="border: 1px solid black; padding: 5px; text-align: center;">%d</td>
                         <td style="border: 1px solid black; padding: 5px; text-align: center;">%s</td>
-                        <td style="border: 1px solid black; padding: 5px;">%s</td>
+                        <td style="border: 1px solid black; padding: 5px;">%s<br><small>HS编码: %s<br>原产地: %s</small></td>
                         <td style="border: 1px solid black; padding: 5px; text-align: center;">%d</td>
                         <td style="border: 1px solid black; padding: 5px; text-align: right;">¥%.2f</td>
                         <td style="border: 1px solid black; padding: 5px; text-align: right;">¥%.2f</td>
@@ -232,6 +240,8 @@ public class CommercialInvoicePdfService {
                     item.getPackageCount(),
                     item.getPackageType(),
                     item.getGoodsDescription(),
+                    hsCode,
+                    countryOfOrigin,
                     item.getQuantity(),
                     item.getUnitPrice(),
                     item.getAmount()
@@ -411,11 +421,14 @@ public class CommercialInvoicePdfService {
         StringBuilder itemsHtml = new StringBuilder();
         
         for (CommercialInvoiceItem item : invoice.getItems()) {
+            String hsCode = item.getHsCode() != null ? item.getHsCode() : "N/A";
+            String countryOfOrigin = item.getCountryOfOrigin() != null ? item.getCountryOfOrigin() : "N/A";
+            
             itemsHtml.append(String.format("""
                     <tr>
                         <td style="border: 1px solid black; padding: 5px; text-align: center;">%d</td>
                         <td style="border: 1px solid black; padding: 5px; text-align: center;">%s</td>
-                        <td style="border: 1px solid black; padding: 5px;">%s</td>
+                        <td style="border: 1px solid black; padding: 5px;">%s<br><small>HSコード: %s<br>原産地: %s</small></td>
                         <td style="border: 1px solid black; padding: 5px; text-align: center;">%d</td>
                         <td style="border: 1px solid black; padding: 5px; text-align: right;">¥%.2f</td>
                         <td style="border: 1px solid black; padding: 5px; text-align: right;">¥%.2f</td>
@@ -424,6 +437,8 @@ public class CommercialInvoicePdfService {
                     item.getPackageCount(),
                     item.getPackageType(),
                     item.getGoodsDescription(),
+                    hsCode,
+                    countryOfOrigin,
                     item.getQuantity(),
                     item.getUnitPrice(),
                     item.getAmount()
@@ -603,11 +618,14 @@ public class CommercialInvoicePdfService {
         StringBuilder itemsHtml = new StringBuilder();
         
         for (CommercialInvoiceItem item : invoice.getItems()) {
+            String hsCode = item.getHsCode() != null ? item.getHsCode() : "N/A";
+            String countryOfOrigin = item.getCountryOfOrigin() != null ? item.getCountryOfOrigin() : "N/A";
+            
             itemsHtml.append(String.format("""
                     <tr>
                         <td style="border: 1px solid black; padding: 5px; text-align: center;">%d</td>
                         <td style="border: 1px solid black; padding: 5px; text-align: center;">%s</td>
-                        <td style="border: 1px solid black; padding: 5px;">%s</td>
+                        <td style="border: 1px solid black; padding: 5px;">%s<br><small>HS Code: %s<br>Origin: %s</small></td>
                         <td style="border: 1px solid black; padding: 5px; text-align: center;">%d</td>
                         <td style="border: 1px solid black; padding: 5px; text-align: right;">€%.2f</td>
                         <td style="border: 1px solid black; padding: 5px; text-align: right;">€%.2f</td>
@@ -616,6 +634,8 @@ public class CommercialInvoicePdfService {
                     item.getPackageCount(),
                     item.getPackageType(),
                     item.getGoodsDescription(),
+                    hsCode,
+                    countryOfOrigin,
                     item.getQuantity(),
                     item.getUnitPrice(),
                     item.getAmount()

@@ -5,6 +5,7 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
 
@@ -19,9 +20,19 @@ public record CommercialInvoiceItemRequest(
         @NotBlank(message = "포장 유형은 필수입니다")
         String packageType,
 
-        @Schema(description = "상품 설명", example = "중합 테스트 제품")
+        @Schema(description = "상품 설명", example = "Apple Juice Concentrate")
         @NotBlank(message = "상품 설명은 필수입니다")
         String goodsDescription,
+
+        @Schema(description = "HS 코드", example = "2009.11.00")
+        @NotBlank(message = "HS 코드는 필수입니다")
+        @Size(max = 20, message = "HS 코드는 20자를 초과할 수 없습니다")
+        String hsCode,
+
+        @Schema(description = "원산지", example = "Korea")
+        @NotBlank(message = "원산지는 필수입니다")
+        @Size(max = 100, message = "원산지는 100자를 초과할 수 없습니다")
+        String countryOfOrigin,
 
         @Schema(description = "수량", example = "500")
         @NotNull(message = "수량은 필수입니다")

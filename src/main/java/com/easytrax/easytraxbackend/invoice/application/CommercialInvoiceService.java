@@ -59,6 +59,8 @@ public class CommercialInvoiceService {
                     .packageCount(itemRequest.packageCount())
                     .packageType(itemRequest.packageType())
                     .goodsDescription(itemRequest.goodsDescription())
+                    .hsCode(itemRequest.hsCode())
+                    .countryOfOrigin(itemRequest.countryOfOrigin())
                     .quantity(itemRequest.quantity())
                     .unitPrice(itemRequest.unitPrice())
                     .build();
@@ -123,6 +125,8 @@ public class CommercialInvoiceService {
                     .packageCount(itemRequest.packageCount())
                     .packageType(itemRequest.packageType())
                     .goodsDescription(itemRequest.goodsDescription())
+                    .hsCode(itemRequest.hsCode())
+                    .countryOfOrigin(itemRequest.countryOfOrigin())
                     .quantity(itemRequest.quantity())
                     .unitPrice(itemRequest.unitPrice())
                     .build();
