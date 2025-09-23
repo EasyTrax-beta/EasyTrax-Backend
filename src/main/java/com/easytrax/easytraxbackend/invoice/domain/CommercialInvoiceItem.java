@@ -51,11 +51,17 @@ public class CommercialInvoiceItem extends BaseEntity {
     @Builder
     public CommercialInvoiceItem(Integer packageCount, String packageType, String goodsDescription,
                                String hsCode, String countryOfOrigin, Integer quantity, BigDecimal unitPrice) {
+        if (quantity == null || unitPrice == null) {
+            throw new IllegalArgumentException("quantity와 unitPrice는 필수입니다");
+        }
+        if (goodsDescription != null && goodsDescription.length() > 500) {
+            throw new IllegalArgumentException("goodsDescription은 500자를 초과할 수 없습니다");
+        }
         this.packageCount = packageCount;
         this.packageType = packageType;
         this.goodsDescription = goodsDescription;
-        this.hsCode = hsCode;
-        this.countryOfOrigin = countryOfOrigin;
+        this.hsCode = norm(hsCode);
+        this.countryOfOrigin = norm(countryOfOrigin);
         this.quantity = quantity;
         this.unitPrice = unitPrice;
         calculateAmount();
@@ -67,11 +73,14 @@ public class CommercialInvoiceItem extends BaseEntity {
 
     public void updateItem(Integer packageCount, String packageType, String goodsDescription,
                           String hsCode, String countryOfOrigin, Integer quantity, BigDecimal unitPrice) {
+        if (goodsDescription != null && goodsDescription.length() > 500) {
+            throw new IllegalArgumentException("goodsDescription은 500자를 초과할 수 없습니다");
+        }
         if (packageCount != null) this.packageCount = packageCount;
         if (packageType != null) this.packageType = packageType;
         if (goodsDescription != null) this.goodsDescription = goodsDescription;
-        if (hsCode != null) this.hsCode = hsCode;
-        if (countryOfOrigin != null) this.countryOfOrigin = countryOfOrigin;
+        if (hsCode != null) this.hsCode = norm(hsCode);
+        if (countryOfOrigin != null) this.countryOfOrigin = norm(countryOfOrigin);
         if (quantity != null) this.quantity = quantity;
         if (unitPrice != null) this.unitPrice = unitPrice;
         calculateAmount();
@@ -84,6 +93,13 @@ public class CommercialInvoiceItem extends BaseEntity {
         this.amount = unitPrice
             .multiply(BigDecimal.valueOf(quantity))
             .setScale(2, RoundingMode.HALF_UP);
+    }
+
+    private String norm(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return null;
+        }
+        return value.trim();
     }
 
     public BigDecimal getTotalPrice() {

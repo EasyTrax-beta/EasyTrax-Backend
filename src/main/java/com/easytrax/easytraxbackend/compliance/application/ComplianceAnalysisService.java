@@ -3,6 +3,7 @@ package com.easytrax.easytraxbackend.compliance.application;
 import com.easytrax.easytraxbackend.compliance.api.dto.request.ComplianceAnalysisRequest;
 import com.easytrax.easytraxbackend.compliance.api.dto.request.InvoiceComplianceAnalysisRequest;
 import com.easytrax.easytraxbackend.compliance.api.dto.response.ComplianceAnalysisResponse;
+import com.easytrax.easytraxbackend.compliance.domain.TradeType;
 import com.easytrax.easytraxbackend.global.code.status.ErrorStatus;
 import com.easytrax.easytraxbackend.global.config.GeminiConfig;
 import com.easytrax.easytraxbackend.global.exception.GeneralException;
@@ -156,71 +157,6 @@ public class ComplianceAnalysisService {
         return sb.toString();
     }
 
-    private String createComplianceTextPrompt(String nutritionText, String destinationCountry) {
-        return String.format("""
-                다음 영양성분표 정보를 바탕으로 %s(%s) 수출을 위한 라벨링 규정 준수 여부를 분석해주세요.
-                
-                %s
-                
-                분석 항목:
-                1. 라벨링 규정 (필수 표시 항목, 글자 크기, 언어 요구사항)
-                2. 영양성분표 (표시 형식, 단위, Daily Value 기준)
-                3. 원산지 표시 (Country of Origin 표기)
-                4. 인증서 요구사항 (필요한 인증 마크나 승인번호)
-                
-                다음 JSON 형식으로 응답해주세요:
-                {
-                  "overallCompliancePercentage": 85,
-                  "complianceStatus": "WARNING",
-                  "estimatedCompletionMinutes": 30,
-                  "categoryScores": [
-                    {
-                      "categoryName": "라벨링 규정",
-                      "score": 70,
-                      "status": "경고"
-                    },
-                    {
-                      "categoryName": "영양성분표",
-                      "score": 90,
-                      "status": "양호"
-                    },
-                    {
-                      "categoryName": "원산지 표시",
-                      "score": 60,
-                      "status": "위험"
-                    },
-                    {
-                      "categoryName": "인증서 요구사항",
-                      "score": 80,
-                      "status": "경고"
-                    }
-                  ],
-                  "issues": [
-                    {
-                      "issueType": "제품명이 누락되었습니다",
-                      "severity": "HIGH",
-                      "description": "제품명을 명확히 표기해주세요",
-                      "regulation": "GB 28050-2011"
-                    }
-                  ],
-                  "improvements": [
-                    {
-                      "category": "발견된 문제점을 수정하세요",
-                      "suggestion": "모든 필수 정보를 정확히 표기해주세요",
-                      "priority": "HIGH"
-                    }
-                  ]
-                }
-                
-                complianceStatus는 다음 중 하나를 사용하세요:
-                - GOOD: 90%% 이상
-                - WARNING: 70-89%%
-                - HIGH_RISK: 70%% 미만
-                """, getCountryName(destinationCountry), destinationCountry, nutritionText);
-    }
-
-
-
     private List<ComplianceAnalysisResponse.CategoryComplianceScore> parseCategoryScores(JsonNode scoresNode) {
         List<ComplianceAnalysisResponse.CategoryComplianceScore> scores = new ArrayList<>();
         
@@ -369,15 +305,8 @@ public class ComplianceAnalysisService {
     }
 
     private String extractDestinationCountryFromProject(com.easytrax.easytraxbackend.project.domain.Project project) {
-        // 프로젝트의 targetCountry를 ISO 코드로 변환
-        if (project == null) {
-            log.warn("프로젝트가 null입니다. 기본값 CN 사용");
-            return "CN";
-        }
-        
-        if (project.getTargetCountry() == null) {
-            log.warn("프로젝트 ID: {}, 목적지 국가가 null입니다. 기본값 CN 사용", project.getId());
-            return "CN";
+        if (project == null || project.getTargetCountry() == null) {
+            throw new GeneralException(ErrorStatus.PROJECT_TARGET_COUNTRY_NOT_FOUND);
         }
         
         String countryCode = project.getTargetCountry().getCountryCode();
@@ -560,7 +489,7 @@ public class ComplianceAnalysisService {
         );
     }
 
-    private String callGeminiApiForInvoiceComplianceWithCountry(String invoiceText, String destinationCountry, String tradeType) {
+    private String callGeminiApiForInvoiceComplianceWithCountry(String invoiceText, String destinationCountry, TradeType tradeType) {
         String url = String.format("%s/v1beta/models/%s:generateContent",
                 geminiConfig.getBaseUrl(), geminiConfig.getModel());
 
@@ -581,7 +510,7 @@ public class ComplianceAnalysisService {
         }
     }
 
-    private Map<String, Object> createInvoiceComplianceRequestBodyWithCountry(String invoiceText, String destinationCountry, String tradeType) {
+    private Map<String, Object> createInvoiceComplianceRequestBodyWithCountry(String invoiceText, String destinationCountry, TradeType tradeType) {
         Map<String, Object> requestBody = new HashMap<>();
 
         Map<String, Object> part1 = new HashMap<>();
@@ -662,7 +591,7 @@ public class ComplianceAnalysisService {
                 """, getCountryName(destinationCountry), destinationCountry, invoiceText);
     }
 
-    private ComplianceAnalysisResponse parseInvoiceComplianceResponseWithCountry(String response, String destinationCountry, String tradeType, CommercialInvoice invoice) {
+    private ComplianceAnalysisResponse parseInvoiceComplianceResponseWithCountry(String response, String destinationCountry, TradeType tradeType, CommercialInvoice invoice) {
         try {
             JsonNode root = objectMapper.readTree(response);
             JsonNode candidates = root.path("candidates");
@@ -684,7 +613,7 @@ public class ComplianceAnalysisService {
         }
     }
 
-    private ComplianceAnalysisResponse parseInvoiceComplianceFromTextWithCountry(String text, String destinationCountry, String tradeType, CommercialInvoice invoice) {
+    private ComplianceAnalysisResponse parseInvoiceComplianceFromTextWithCountry(String text, String destinationCountry, TradeType tradeType, CommercialInvoice invoice) {
         try {
             String jsonText = extractJsonFromText(text);
             JsonNode jsonNode = objectMapper.readTree(jsonText);
@@ -702,7 +631,7 @@ public class ComplianceAnalysisService {
                     null,
                     null, // 상업송장의 경우 nutritionLabelId는 null
                     destinationCountry,
-                    tradeType,
+                    tradeType.name(),
                     jsonNode.path("overallCompliancePercentage").asInt(50),
                     parseComplianceStatus(jsonNode.path("complianceStatus").asText("WARNING")),
                     jsonNode.path("estimatedCompletionMinutes").asInt(60),
@@ -717,12 +646,12 @@ public class ComplianceAnalysisService {
         }
     }
 
-    private ComplianceAnalysisResponse createDefaultInvoiceComplianceResponseWithCountry(String destinationCountry, String tradeType, CommercialInvoice invoice) {
+    private ComplianceAnalysisResponse createDefaultInvoiceComplianceResponseWithCountry(String destinationCountry, TradeType tradeType, CommercialInvoice invoice) {
         return new ComplianceAnalysisResponse(
                 null,
                 null,
                 destinationCountry,
-                tradeType,
+                tradeType.name(),
                 50,
                 ComplianceAnalysisResponse.ComplianceStatus.WARNING,
                 60,

@@ -14,6 +14,15 @@ import java.time.format.DateTimeFormatter;
 public class CommercialInvoicePdfService {
 
     private final PdfService pdfService;
+    
+    private String esc(String input) {
+        if (input == null) return "";
+        return input.replace("&", "&amp;")
+                   .replace("<", "&lt;")
+                   .replace(">", "&gt;")
+                   .replace("\"", "&quot;")
+                   .replace("'", "&#x27;");
+    }
 
     public byte[] generateCommercialInvoicePdf(CommercialInvoice invoice) {
         String htmlContent = switch (invoice.getInvoiceFormat()) {
@@ -29,8 +38,8 @@ public class CommercialInvoicePdfService {
         StringBuilder itemsHtml = new StringBuilder();
         
         for (CommercialInvoiceItem item : invoice.getItems()) {
-            String hsCode = item.getHsCode() != null ? item.getHsCode() : "N/A";
-            String countryOfOrigin = item.getCountryOfOrigin() != null ? item.getCountryOfOrigin() : "N/A";
+            String hsCode = item.getHsCode() != null ? esc(item.getHsCode()) : "N/A";
+            String countryOfOrigin = item.getCountryOfOrigin() != null ? esc(item.getCountryOfOrigin()) : "N/A";
             
             itemsHtml.append(String.format("""
                     <tr>
@@ -43,8 +52,8 @@ public class CommercialInvoicePdfService {
                     </tr>
                     """,
                     item.getPackageCount(),
-                    item.getPackageType(),
-                    item.getGoodsDescription(),
+                    esc(item.getPackageType()),
+                    esc(item.getGoodsDescription()),
                     hsCode,
                     countryOfOrigin,
                     item.getQuantity(),
@@ -193,30 +202,30 @@ public class CommercialInvoicePdfService {
                 </body>
                 </html>
                 """,
-                invoice.getShipperSellerName(),
-                invoice.getShipperSellerAddress(),
-                invoice.getShipperSellerPhone() != null ? "<div>Tel: " + invoice.getShipperSellerPhone() + "</div>" : "",
-                invoice.getInvoiceNumber(),
+                esc(invoice.getShipperSellerName()),
+                esc(invoice.getShipperSellerAddress()),
+                invoice.getShipperSellerPhone() != null ? "<div>Tel: " + esc(invoice.getShipperSellerPhone()) + "</div>" : "",
+                esc(invoice.getInvoiceNumber()),
                 invoice.getInvoiceDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                invoice.getConsigneeName() != null ? invoice.getConsigneeName() : "",
-                invoice.getConsigneeAddress() != null ? "<div>" + invoice.getConsigneeAddress() + "</div>" : "",
-                invoice.getLcNumber() != null ? invoice.getLcNumber() : "N/A",
+                invoice.getConsigneeName() != null ? esc(invoice.getConsigneeName()) : "",
+                invoice.getConsigneeAddress() != null ? "<div>" + esc(invoice.getConsigneeAddress()) + "</div>" : "",
+                invoice.getLcNumber() != null ? esc(invoice.getLcNumber()) : "N/A",
                 invoice.getLcDate() != null ? invoice.getLcDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : "N/A",
-                invoice.getLcNumber() != null ? invoice.getLcNumber() : "N/A",
-                invoice.getBuyerName(),
-                invoice.getBuyerAddress(),
-                invoice.getBuyerPhone() != null ? "<div>Tel: " + invoice.getBuyerPhone() + "</div>" : "",
-                invoice.getOtherReferences() != null ? invoice.getOtherReferences() : "N/A",
+                invoice.getLcNumber() != null ? esc(invoice.getLcNumber()) : "N/A",
+                esc(invoice.getBuyerName()),
+                esc(invoice.getBuyerAddress()),
+                invoice.getBuyerPhone() != null ? "<div>Tel: " + esc(invoice.getBuyerPhone()) + "</div>" : "",
+                invoice.getOtherReferences() != null ? esc(invoice.getOtherReferences()) : "N/A",
                 invoice.getDepartureDate() != null ? invoice.getDepartureDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : "N/A",
-                invoice.getTermsOfDelivery() != null ? invoice.getTermsOfDelivery() : "",
-                invoice.getPaymentTerms() != null ? invoice.getPaymentTerms() : "",
-                invoice.getVesselFlight() != null ? invoice.getVesselFlight() : "N/A",
-                invoice.getFromCountry(),
-                invoice.getToDestination() != null ? invoice.getToDestination() : "N/A",
-                invoice.getShippingMarks() != null ? invoice.getShippingMarks() : "N/A",
+                invoice.getTermsOfDelivery() != null ? esc(invoice.getTermsOfDelivery()) : "",
+                invoice.getPaymentTerms() != null ? esc(invoice.getPaymentTerms()) : "",
+                invoice.getVesselFlight() != null ? esc(invoice.getVesselFlight()) : "N/A",
+                esc(invoice.getFromCountry()),
+                invoice.getToDestination() != null ? esc(invoice.getToDestination()) : "N/A",
+                invoice.getShippingMarks() != null ? esc(invoice.getShippingMarks()) : "N/A",
                 itemsHtml.toString(),
                 invoice.getTotalAmount(),
-                invoice.getShipperSellerName()
+                esc(invoice.getShipperSellerName())
         );
     }
 
@@ -224,8 +233,8 @@ public class CommercialInvoicePdfService {
         StringBuilder itemsHtml = new StringBuilder();
         
         for (CommercialInvoiceItem item : invoice.getItems()) {
-            String hsCode = item.getHsCode() != null ? item.getHsCode() : "N/A";
-            String countryOfOrigin = item.getCountryOfOrigin() != null ? item.getCountryOfOrigin() : "N/A";
+            String hsCode = item.getHsCode() != null ? esc(item.getHsCode()) : "N/A";
+            String countryOfOrigin = item.getCountryOfOrigin() != null ? esc(item.getCountryOfOrigin()) : "N/A";
             
             itemsHtml.append(String.format("""
                     <tr>
@@ -238,8 +247,8 @@ public class CommercialInvoicePdfService {
                     </tr>
                     """,
                     item.getPackageCount(),
-                    item.getPackageType(),
-                    item.getGoodsDescription(),
+                    esc(item.getPackageType()),
+                    esc(item.getGoodsDescription()),
                     hsCode,
                     countryOfOrigin,
                     item.getQuantity(),
@@ -390,30 +399,30 @@ public class CommercialInvoicePdfService {
                 </body>
                 </html>
                 """,
-                invoice.getShipperSellerName(),
-                invoice.getShipperSellerAddress(),
-                invoice.getShipperSellerPhone() != null ? "<div>电话 Tel: " + invoice.getShipperSellerPhone() + "</div>" : "",
-                invoice.getInvoiceNumber(),
+                esc(invoice.getShipperSellerName()),
+                esc(invoice.getShipperSellerAddress()),
+                invoice.getShipperSellerPhone() != null ? "<div>电话 Tel: " + esc(invoice.getShipperSellerPhone()) + "</div>" : "",
+                esc(invoice.getInvoiceNumber()),
                 invoice.getInvoiceDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                invoice.getConsigneeName() != null ? invoice.getConsigneeName() : "",
-                invoice.getConsigneeAddress() != null ? "<div>" + invoice.getConsigneeAddress() + "</div>" : "",
-                invoice.getLcNumber() != null ? invoice.getLcNumber() : "N/A",
+                invoice.getConsigneeName() != null ? esc(invoice.getConsigneeName()) : "",
+                invoice.getConsigneeAddress() != null ? "<div>" + esc(invoice.getConsigneeAddress()) + "</div>" : "",
+                invoice.getLcNumber() != null ? esc(invoice.getLcNumber()) : "N/A",
                 invoice.getLcDate() != null ? invoice.getLcDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : "N/A",
-                invoice.getLcNumber() != null ? invoice.getLcNumber() : "N/A",
-                invoice.getBuyerName(),
-                invoice.getBuyerAddress(),
-                invoice.getBuyerPhone() != null ? "<div>电话 Tel: " + invoice.getBuyerPhone() + "</div>" : "",
-                invoice.getOtherReferences() != null ? invoice.getOtherReferences() : "N/A",
+                invoice.getLcNumber() != null ? esc(invoice.getLcNumber()) : "N/A",
+                esc(invoice.getBuyerName()),
+                esc(invoice.getBuyerAddress()),
+                invoice.getBuyerPhone() != null ? "<div>电话 Tel: " + esc(invoice.getBuyerPhone()) + "</div>" : "",
+                invoice.getOtherReferences() != null ? esc(invoice.getOtherReferences()) : "N/A",
                 invoice.getDepartureDate() != null ? invoice.getDepartureDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : "N/A",
-                invoice.getTermsOfDelivery() != null ? invoice.getTermsOfDelivery() : "",
-                invoice.getPaymentTerms() != null ? invoice.getPaymentTerms() : "",
-                invoice.getVesselFlight() != null ? invoice.getVesselFlight() : "N/A",
-                invoice.getFromCountry(),
-                invoice.getToDestination() != null ? invoice.getToDestination() : "N/A",
-                invoice.getShippingMarks() != null ? invoice.getShippingMarks() : "N/A",
+                invoice.getTermsOfDelivery() != null ? esc(invoice.getTermsOfDelivery()) : "",
+                invoice.getPaymentTerms() != null ? esc(invoice.getPaymentTerms()) : "",
+                invoice.getVesselFlight() != null ? esc(invoice.getVesselFlight()) : "N/A",
+                esc(invoice.getFromCountry()),
+                invoice.getToDestination() != null ? esc(invoice.getToDestination()) : "N/A",
+                invoice.getShippingMarks() != null ? esc(invoice.getShippingMarks()) : "N/A",
                 itemsHtml.toString(),
                 invoice.getTotalAmount(),
-                invoice.getShipperSellerName()
+                esc(invoice.getShipperSellerName())
         );
     }
 
@@ -421,8 +430,8 @@ public class CommercialInvoicePdfService {
         StringBuilder itemsHtml = new StringBuilder();
         
         for (CommercialInvoiceItem item : invoice.getItems()) {
-            String hsCode = item.getHsCode() != null ? item.getHsCode() : "N/A";
-            String countryOfOrigin = item.getCountryOfOrigin() != null ? item.getCountryOfOrigin() : "N/A";
+            String hsCode = item.getHsCode() != null ? esc(item.getHsCode()) : "N/A";
+            String countryOfOrigin = item.getCountryOfOrigin() != null ? esc(item.getCountryOfOrigin()) : "N/A";
             
             itemsHtml.append(String.format("""
                     <tr>
@@ -435,8 +444,8 @@ public class CommercialInvoicePdfService {
                     </tr>
                     """,
                     item.getPackageCount(),
-                    item.getPackageType(),
-                    item.getGoodsDescription(),
+                    esc(item.getPackageType()),
+                    esc(item.getGoodsDescription()),
                     hsCode,
                     countryOfOrigin,
                     item.getQuantity(),
@@ -587,30 +596,30 @@ public class CommercialInvoicePdfService {
                 </body>
                 </html>
                 """,
-                invoice.getShipperSellerName(),
-                invoice.getShipperSellerAddress(),
-                invoice.getShipperSellerPhone() != null ? "<div>電話 Tel: " + invoice.getShipperSellerPhone() + "</div>" : "",
-                invoice.getInvoiceNumber(),
+                esc(invoice.getShipperSellerName()),
+                esc(invoice.getShipperSellerAddress()),
+                invoice.getShipperSellerPhone() != null ? "<div>電話 Tel: " + esc(invoice.getShipperSellerPhone()) + "</div>" : "",
+                esc(invoice.getInvoiceNumber()),
                 invoice.getInvoiceDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                invoice.getConsigneeName() != null ? invoice.getConsigneeName() : "",
-                invoice.getConsigneeAddress() != null ? "<div>" + invoice.getConsigneeAddress() + "</div>" : "",
-                invoice.getLcNumber() != null ? invoice.getLcNumber() : "N/A",
+                invoice.getConsigneeName() != null ? esc(invoice.getConsigneeName()) : "",
+                invoice.getConsigneeAddress() != null ? "<div>" + esc(invoice.getConsigneeAddress()) + "</div>" : "",
+                invoice.getLcNumber() != null ? esc(invoice.getLcNumber()) : "N/A",
                 invoice.getLcDate() != null ? invoice.getLcDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : "N/A",
-                invoice.getLcNumber() != null ? invoice.getLcNumber() : "N/A",
-                invoice.getBuyerName(),
-                invoice.getBuyerAddress(),
-                invoice.getBuyerPhone() != null ? "<div>電話 Tel: " + invoice.getBuyerPhone() + "</div>" : "",
-                invoice.getOtherReferences() != null ? invoice.getOtherReferences() : "N/A",
+                invoice.getLcNumber() != null ? esc(invoice.getLcNumber()) : "N/A",
+                esc(invoice.getBuyerName()),
+                esc(invoice.getBuyerAddress()),
+                invoice.getBuyerPhone() != null ? "<div>電話 Tel: " + esc(invoice.getBuyerPhone()) + "</div>" : "",
+                invoice.getOtherReferences() != null ? esc(invoice.getOtherReferences()) : "N/A",
                 invoice.getDepartureDate() != null ? invoice.getDepartureDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : "N/A",
-                invoice.getTermsOfDelivery() != null ? invoice.getTermsOfDelivery() : "",
-                invoice.getPaymentTerms() != null ? invoice.getPaymentTerms() : "",
-                invoice.getVesselFlight() != null ? invoice.getVesselFlight() : "N/A",
-                invoice.getFromCountry(),
-                invoice.getToDestination() != null ? invoice.getToDestination() : "N/A",
-                invoice.getShippingMarks() != null ? invoice.getShippingMarks() : "N/A",
+                invoice.getTermsOfDelivery() != null ? esc(invoice.getTermsOfDelivery()) : "",
+                invoice.getPaymentTerms() != null ? esc(invoice.getPaymentTerms()) : "",
+                invoice.getVesselFlight() != null ? esc(invoice.getVesselFlight()) : "N/A",
+                esc(invoice.getFromCountry()),
+                invoice.getToDestination() != null ? esc(invoice.getToDestination()) : "N/A",
+                invoice.getShippingMarks() != null ? esc(invoice.getShippingMarks()) : "N/A",
                 itemsHtml.toString(),
                 invoice.getTotalAmount(),
-                invoice.getShipperSellerName()
+                esc(invoice.getShipperSellerName())
         );
     }
 
@@ -618,8 +627,8 @@ public class CommercialInvoicePdfService {
         StringBuilder itemsHtml = new StringBuilder();
         
         for (CommercialInvoiceItem item : invoice.getItems()) {
-            String hsCode = item.getHsCode() != null ? item.getHsCode() : "N/A";
-            String countryOfOrigin = item.getCountryOfOrigin() != null ? item.getCountryOfOrigin() : "N/A";
+            String hsCode = item.getHsCode() != null ? esc(item.getHsCode()) : "N/A";
+            String countryOfOrigin = item.getCountryOfOrigin() != null ? esc(item.getCountryOfOrigin()) : "N/A";
             
             itemsHtml.append(String.format("""
                     <tr>
@@ -632,8 +641,8 @@ public class CommercialInvoicePdfService {
                     </tr>
                     """,
                     item.getPackageCount(),
-                    item.getPackageType(),
-                    item.getGoodsDescription(),
+                    esc(item.getPackageType()),
+                    esc(item.getGoodsDescription()),
                     hsCode,
                     countryOfOrigin,
                     item.getQuantity(),
@@ -790,30 +799,30 @@ public class CommercialInvoicePdfService {
                 </body>
                 </html>
                 """,
-                invoice.getShipperSellerName(),
-                invoice.getShipperSellerAddress(),
-                invoice.getShipperSellerPhone() != null ? "<div>Tel: " + invoice.getShipperSellerPhone() + "</div>" : "",
-                invoice.getInvoiceNumber(),
+                esc(invoice.getShipperSellerName()),
+                esc(invoice.getShipperSellerAddress()),
+                invoice.getShipperSellerPhone() != null ? "<div>Tel: " + esc(invoice.getShipperSellerPhone()) + "</div>" : "",
+                esc(invoice.getInvoiceNumber()),
                 invoice.getInvoiceDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-                invoice.getConsigneeName() != null ? invoice.getConsigneeName() : "",
-                invoice.getConsigneeAddress() != null ? "<div>" + invoice.getConsigneeAddress() + "</div>" : "",
-                invoice.getLcNumber() != null ? invoice.getLcNumber() : "N/A",
+                invoice.getConsigneeName() != null ? esc(invoice.getConsigneeName()) : "",
+                invoice.getConsigneeAddress() != null ? "<div>" + esc(invoice.getConsigneeAddress()) + "</div>" : "",
+                invoice.getLcNumber() != null ? esc(invoice.getLcNumber()) : "N/A",
                 invoice.getLcDate() != null ? invoice.getLcDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "N/A",
-                invoice.getLcNumber() != null ? invoice.getLcNumber() : "N/A",
-                invoice.getBuyerName(),
-                invoice.getBuyerAddress(),
-                invoice.getBuyerPhone() != null ? "<div>Tel: " + invoice.getBuyerPhone() + "</div>" : "",
-                invoice.getOtherReferences() != null ? invoice.getOtherReferences() : "N/A",
+                invoice.getLcNumber() != null ? esc(invoice.getLcNumber()) : "N/A",
+                esc(invoice.getBuyerName()),
+                esc(invoice.getBuyerAddress()),
+                invoice.getBuyerPhone() != null ? "<div>Tel: " + esc(invoice.getBuyerPhone()) + "</div>" : "",
+                invoice.getOtherReferences() != null ? esc(invoice.getOtherReferences()) : "N/A",
                 invoice.getDepartureDate() != null ? invoice.getDepartureDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "N/A",
-                invoice.getTermsOfDelivery() != null ? invoice.getTermsOfDelivery() : "",
-                invoice.getPaymentTerms() != null ? invoice.getPaymentTerms() : "",
-                invoice.getVesselFlight() != null ? invoice.getVesselFlight() : "N/A",
-                invoice.getFromCountry(),
-                invoice.getToDestination() != null ? invoice.getToDestination() : "N/A",
-                invoice.getShippingMarks() != null ? invoice.getShippingMarks() : "N/A",
+                invoice.getTermsOfDelivery() != null ? esc(invoice.getTermsOfDelivery()) : "",
+                invoice.getPaymentTerms() != null ? esc(invoice.getPaymentTerms()) : "",
+                invoice.getVesselFlight() != null ? esc(invoice.getVesselFlight()) : "N/A",
+                esc(invoice.getFromCountry()),
+                invoice.getToDestination() != null ? esc(invoice.getToDestination()) : "N/A",
+                invoice.getShippingMarks() != null ? esc(invoice.getShippingMarks()) : "N/A",
                 itemsHtml.toString(),
                 invoice.getTotalAmount(),
-                invoice.getShipperSellerName()
+                esc(invoice.getShipperSellerName())
         );
     }
 }

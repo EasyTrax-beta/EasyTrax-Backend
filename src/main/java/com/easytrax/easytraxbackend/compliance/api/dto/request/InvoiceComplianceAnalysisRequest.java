@@ -1,5 +1,6 @@
 package com.easytrax.easytraxbackend.compliance.api.dto.request;
 
+import com.easytrax.easytraxbackend.compliance.domain.TradeType;
 import com.easytrax.easytraxbackend.global.validation.annotation.ValidCountryCode;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
@@ -13,6 +14,6 @@ public record InvoiceComplianceAnalysisRequest(
         
         @Schema(description = "무역 유형", example = "EXPORT")
         @NotNull(message = "무역 유형은 필수입니다")
-        String tradeType
+        TradeType tradeType
 ) {
 }

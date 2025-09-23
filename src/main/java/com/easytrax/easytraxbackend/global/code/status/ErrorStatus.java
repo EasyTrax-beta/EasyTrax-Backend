@@ -36,6 +36,7 @@ public enum ErrorStatus implements BaseErrorCode {
     PROJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "PROJECT4044", "프로젝트를 찾을 수 없습니다."),
     NUTRITION_LABEL_NOT_FOUND(HttpStatus.NOT_FOUND, "NUTRITION4045", "영양성분표를 찾을 수 없습니다."),
     COMMERCIAL_INVOICE_NOT_FOUND(HttpStatus.NOT_FOUND, "INVOICE4046", "상업송장을 찾을 수 없습니다."),
+    PROJECT_TARGET_COUNTRY_NOT_FOUND(HttpStatus.BAD_REQUEST, "PROJECT4047", "프로젝트의 목적지 국가 정보가 설정되지 않았습니다."),
 
     // 405 Method Not Allowed
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "COMMON405", "허용되지 않는 HTTP 메서드입니다."),
