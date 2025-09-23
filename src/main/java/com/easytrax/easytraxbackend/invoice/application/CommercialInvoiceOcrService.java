@@ -133,6 +133,8 @@ public class CommercialInvoiceOcrService {
                       "packageCount": 10,
                       "packageType": "Boxes",
                       "goodsDescription": "상품 설명",
+                      "hsCode": "2009.11.00",
+                      "countryOfOrigin": "Korea",
                       "quantity": 240,
                       "unitPrice": 2.50
                     }
@@ -218,8 +220,8 @@ public class CommercialInvoiceOcrService {
                         itemNode.path("packageCount").asInt(1),
                         itemNode.path("packageType").asText("Package"),
                         itemNode.path("goodsDescription").asText("Unknown Product"),
-                        itemNode.path("hsCode").asText("0000.00.00"),
-                        itemNode.path("countryOfOrigin").asText("Unknown"),
+                        getStringOrNull(itemNode, "hsCode"),
+                        getStringOrNull(itemNode, "countryOfOrigin"),
                         itemNode.path("quantity").asInt(1),
                         BigDecimal.valueOf(itemNode.path("unitPrice").asDouble(0.0))
                 );
@@ -227,7 +229,7 @@ public class CommercialInvoiceOcrService {
             }
         } else {
             items.add(new CommercialInvoiceItemRequest(
-                    1, "Package", "Unknown Product", "0000.00.00", "Unknown", 1, BigDecimal.ZERO));
+                    1, "Package", "Unknown Product", null, null, 1, BigDecimal.ZERO));
         }
         
         return items;
@@ -263,7 +265,7 @@ public class CommercialInvoiceOcrService {
 
     private CommercialInvoiceCreateRequest createDefaultInvoiceRequest(Long projectId, InvoiceFormat invoiceFormat) {
         List<CommercialInvoiceItemRequest> defaultItems = List.of(
-                new CommercialInvoiceItemRequest(1, "Package", "Unknown Product", "0000.00.00", "Unknown", 1, BigDecimal.ZERO)
+                new CommercialInvoiceItemRequest(1, "Package", "Unknown Product", null, null, 1, BigDecimal.ZERO)
         );
         
         return new CommercialInvoiceCreateRequest(

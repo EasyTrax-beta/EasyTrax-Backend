@@ -47,8 +47,8 @@ public class CommercialInvoicePdfService {
                         <td style="border: 1px solid black; padding: 5px; text-align: center;">%s</td>
                         <td style="border: 1px solid black; padding: 5px;">%s<br><small>HS Code: %s<br>Origin: %s</small></td>
                         <td style="border: 1px solid black; padding: 5px; text-align: center;">%d</td>
-                        <td style="border: 1px solid black; padding: 5px; text-align: right;">$%.2f</td>
-                        <td style="border: 1px solid black; padding: 5px; text-align: right;">$%.2f</td>
+                        <td style="border: 1px solid black; padding: 5px; text-align: right;">$%s</td>
+                        <td style="border: 1px solid black; padding: 5px; text-align: right;">$%s</td>
                     </tr>
                     """,
                     item.getPackageCount(),
@@ -57,8 +57,8 @@ public class CommercialInvoicePdfService {
                     hsCode,
                     countryOfOrigin,
                     item.getQuantity(),
-                    item.getUnitPrice(),
-                    item.getAmount()
+                    item.getUnitPrice().setScale(2, java.math.RoundingMode.HALF_UP).toPlainString(),
+                    item.getAmount().setScale(2, java.math.RoundingMode.HALF_UP).toPlainString()
             ));
         }
 
@@ -189,7 +189,7 @@ public class CommercialInvoicePdfService {
                     
                     <div style="text-align: right; margin-top: 20px;">
                         <div style="font-size: 16px; font-weight: bold;">
-                            Total Amount: $%.2f
+                            Total Amount: $%s
                         </div>
                     </div>
                     
@@ -224,7 +224,7 @@ public class CommercialInvoicePdfService {
                 invoice.getToDestination() != null ? esc(invoice.getToDestination()) : "N/A",
                 invoice.getShippingMarks() != null ? esc(invoice.getShippingMarks()) : "N/A",
                 itemsHtml.toString(),
-                invoice.getTotalAmount(),
+                invoice.getTotalAmount().setScale(2, java.math.RoundingMode.HALF_UP).toPlainString(),
                 esc(invoice.getShipperSellerName())
         );
     }
@@ -242,8 +242,8 @@ public class CommercialInvoicePdfService {
                         <td style="border: 1px solid black; padding: 5px; text-align: center;">%s</td>
                         <td style="border: 1px solid black; padding: 5px;">%s<br><small>HS编码: %s<br>原产地: %s</small></td>
                         <td style="border: 1px solid black; padding: 5px; text-align: center;">%d</td>
-                        <td style="border: 1px solid black; padding: 5px; text-align: right;">¥%.2f</td>
-                        <td style="border: 1px solid black; padding: 5px; text-align: right;">¥%.2f</td>
+                        <td style="border: 1px solid black; padding: 5px; text-align: right;">¥%s</td>
+                        <td style="border: 1px solid black; padding: 5px; text-align: right;">¥%s</td>
                     </tr>
                     """,
                     item.getPackageCount(),
@@ -252,8 +252,8 @@ public class CommercialInvoicePdfService {
                     hsCode,
                     countryOfOrigin,
                     item.getQuantity(),
-                    item.getUnitPrice(),
-                    item.getAmount()
+                    item.getUnitPrice().setScale(2, java.math.RoundingMode.HALF_UP).toPlainString(),
+                    item.getAmount().setScale(2, java.math.RoundingMode.HALF_UP).toPlainString()
             ));
         }
 
@@ -386,7 +386,7 @@ public class CommercialInvoicePdfService {
                     
                     <div style="text-align: right; margin-top: 20px;">
                         <div style="font-size: 16px; font-weight: bold;">
-                            总金额 Total Amount: ¥%.2f
+                            总金额 Total Amount: ¥%s
                         </div>
                     </div>
                     
@@ -421,7 +421,7 @@ public class CommercialInvoicePdfService {
                 invoice.getToDestination() != null ? esc(invoice.getToDestination()) : "N/A",
                 invoice.getShippingMarks() != null ? esc(invoice.getShippingMarks()) : "N/A",
                 itemsHtml.toString(),
-                invoice.getTotalAmount(),
+                invoice.getTotalAmount().setScale(2, java.math.RoundingMode.HALF_UP).toPlainString(),
                 esc(invoice.getShipperSellerName())
         );
     }
@@ -439,8 +439,8 @@ public class CommercialInvoicePdfService {
                         <td style="border: 1px solid black; padding: 5px; text-align: center;">%s</td>
                         <td style="border: 1px solid black; padding: 5px;">%s<br><small>HSコード: %s<br>原産地: %s</small></td>
                         <td style="border: 1px solid black; padding: 5px; text-align: center;">%d</td>
-                        <td style="border: 1px solid black; padding: 5px; text-align: right;">¥%.2f</td>
-                        <td style="border: 1px solid black; padding: 5px; text-align: right;">¥%.2f</td>
+                        <td style="border: 1px solid black; padding: 5px; text-align: right;">¥%s</td>
+                        <td style="border: 1px solid black; padding: 5px; text-align: right;">¥%s</td>
                     </tr>
                     """,
                     item.getPackageCount(),
@@ -449,8 +449,8 @@ public class CommercialInvoicePdfService {
                     hsCode,
                     countryOfOrigin,
                     item.getQuantity(),
-                    item.getUnitPrice(),
-                    item.getAmount()
+                    item.getUnitPrice().setScale(2, java.math.RoundingMode.HALF_UP).toPlainString(),
+                    item.getAmount().setScale(2, java.math.RoundingMode.HALF_UP).toPlainString()
             ));
         }
 
@@ -583,7 +583,7 @@ public class CommercialInvoicePdfService {
                     
                     <div style="text-align: right; margin-top: 20px;">
                         <div style="font-size: 16px; font-weight: bold;">
-                            合計金額 Total Amount: ¥%.2f
+                            合計金額 Total Amount: ¥%s
                         </div>
                     </div>
                     
@@ -618,7 +618,7 @@ public class CommercialInvoicePdfService {
                 invoice.getToDestination() != null ? esc(invoice.getToDestination()) : "N/A",
                 invoice.getShippingMarks() != null ? esc(invoice.getShippingMarks()) : "N/A",
                 itemsHtml.toString(),
-                invoice.getTotalAmount(),
+                invoice.getTotalAmount().setScale(2, java.math.RoundingMode.HALF_UP).toPlainString(),
                 esc(invoice.getShipperSellerName())
         );
     }
@@ -636,8 +636,8 @@ public class CommercialInvoicePdfService {
                         <td style="border: 1px solid black; padding: 5px; text-align: center;">%s</td>
                         <td style="border: 1px solid black; padding: 5px;">%s<br><small>HS Code: %s<br>Origin: %s</small></td>
                         <td style="border: 1px solid black; padding: 5px; text-align: center;">%d</td>
-                        <td style="border: 1px solid black; padding: 5px; text-align: right;">€%.2f</td>
-                        <td style="border: 1px solid black; padding: 5px; text-align: right;">€%.2f</td>
+                        <td style="border: 1px solid black; padding: 5px; text-align: right;">€%s</td>
+                        <td style="border: 1px solid black; padding: 5px; text-align: right;">€%s</td>
                     </tr>
                     """,
                     item.getPackageCount(),
@@ -646,8 +646,8 @@ public class CommercialInvoicePdfService {
                     hsCode,
                     countryOfOrigin,
                     item.getQuantity(),
-                    item.getUnitPrice(),
-                    item.getAmount()
+                    item.getUnitPrice().setScale(2, java.math.RoundingMode.HALF_UP).toPlainString(),
+                    item.getAmount().setScale(2, java.math.RoundingMode.HALF_UP).toPlainString()
             ));
         }
 
@@ -781,7 +781,7 @@ public class CommercialInvoicePdfService {
                     
                     <div style="text-align: right; margin-top: 20px;">
                         <div style="font-size: 16px; font-weight: bold;">
-                            Total Invoice Amount: €%.2f
+                            Total Invoice Amount: €%s
                         </div>
                     </div>
                     
@@ -821,7 +821,7 @@ public class CommercialInvoicePdfService {
                 invoice.getToDestination() != null ? esc(invoice.getToDestination()) : "N/A",
                 invoice.getShippingMarks() != null ? esc(invoice.getShippingMarks()) : "N/A",
                 itemsHtml.toString(),
-                invoice.getTotalAmount(),
+                invoice.getTotalAmount().setScale(2, java.math.RoundingMode.HALF_UP).toPlainString(),
                 esc(invoice.getShipperSellerName())
         );
     }

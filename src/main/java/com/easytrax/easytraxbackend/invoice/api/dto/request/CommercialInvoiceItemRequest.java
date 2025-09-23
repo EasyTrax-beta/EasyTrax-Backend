@@ -22,6 +22,7 @@ public record CommercialInvoiceItemRequest(
 
         @Schema(description = "상품 설명", example = "Apple Juice Concentrate")
         @NotBlank(message = "상품 설명은 필수입니다")
+        @Size(max = 500, message = "상품 설명은 500자를 초과할 수 없습니다")
         String goodsDescription,
 
         @Schema(description = "HS 코드", example = "2009.11.00")

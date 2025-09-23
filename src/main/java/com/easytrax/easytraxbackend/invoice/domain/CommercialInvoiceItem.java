@@ -29,10 +29,10 @@ public class CommercialInvoiceItem extends BaseEntity {
     @Column(name = "goods_description", nullable = false, length = 500)
     private String goodsDescription;
 
-    @Column(name = "hs_code", nullable = false, length = 20)
+    @Column(name = "hs_code", nullable = true, length = 20)
     private String hsCode;
 
-    @Column(name = "country_of_origin", nullable = false, length = 100)
+    @Column(name = "country_of_origin", nullable = true, length = 100)
     private String countryOfOrigin;
 
     @Column(name = "quantity", nullable = false)
