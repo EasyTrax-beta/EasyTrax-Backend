@@ -69,6 +69,10 @@ public class NutritionLabelPdfService {
                 <body>
                     <div class="nutrition-facts">
                         <div class="title">Nutrition Facts</div>
+                        <div style="text-align: center; font-size: 10px; margin-bottom: 5px;">
+                            <div><strong>%s</strong></div>
+                            <div>Country of Origin: %s</div>
+                        </div>
                         <div class="serving-info">
                             <div>%d servings per container</div>
                             <div class="serving-size">Serving size %s</div>
@@ -160,34 +164,36 @@ public class NutritionLabelPdfService {
                 </body>
                 </html>
                 """,
+                nutritionLabel.getProductName(),
+                nutritionLabel.getCountryOfOrigin(),
                 intOrDefault(nutritionLabel.getServingsPerContainer(), 1),
                 nutritionLabel.getServingSize(),
                 nutritionLabel.getCalories(),
                 formatValue(nutritionLabel.getTotalFat()),
-                calculateDailyValue(nutritionLabel.getTotalFat(), new BigDecimal("78")),
+                intOrDefault(nutritionLabel.getTotalFatDV(), 0),
                 formatValue(nutritionLabel.getSaturatedFat()),
-                calculateDailyValue(nutritionLabel.getSaturatedFat(), new BigDecimal("20")),
+                intOrDefault(nutritionLabel.getSaturatedFatDV(), 0),
                 formatValue(nutritionLabel.getTransFat()),
                 formatValue(nutritionLabel.getCholesterol()),
-                calculateDailyValue(nutritionLabel.getCholesterol(), new BigDecimal("300")),
+                intOrDefault(nutritionLabel.getCholesterolDV(), 0),
                 formatValue(nutritionLabel.getSodium()),
-                calculateDailyValue(nutritionLabel.getSodium(), new BigDecimal("2300")),
+                intOrDefault(nutritionLabel.getSodiumDV(), 0),
                 formatValue(nutritionLabel.getTotalCarbohydrate()),
-                calculateDailyValue(nutritionLabel.getTotalCarbohydrate(), new BigDecimal("275")),
+                intOrDefault(nutritionLabel.getTotalCarbohydrateDV(), 0),
                 formatValue(nutritionLabel.getDietaryFiber()),
-                calculateDailyValue(nutritionLabel.getDietaryFiber(), new BigDecimal("28")),
+                intOrDefault(nutritionLabel.getDietaryFiberDV(), 0),
                 formatValue(nutritionLabel.getTotalSugars()),
                 formatValue(nutritionLabel.getAddedSugars()),
-                calculateDailyValue(nutritionLabel.getAddedSugars(), new BigDecimal("50")),
+                intOrDefault(nutritionLabel.getAddedSugarsDV(), 0),
                 formatValue(nutritionLabel.getProtein()),
                 formatValue(nutritionLabel.getVitaminD()),
-                calculateDailyValue(nutritionLabel.getVitaminD(), new BigDecimal("20")),
+                intOrDefault(nutritionLabel.getVitaminDDV(), 0),
                 formatValue(nutritionLabel.getCalcium()),
-                calculateDailyValue(nutritionLabel.getCalcium(), new BigDecimal("1300")),
+                intOrDefault(nutritionLabel.getCalciumDV(), 0),
                 formatValue(nutritionLabel.getIron()),
-                calculateDailyValue(nutritionLabel.getIron(), new BigDecimal("18")),
+                intOrDefault(nutritionLabel.getIronDV(), 0),
                 formatValue(nutritionLabel.getPotassium()),
-                calculateDailyValue(nutritionLabel.getPotassium(), new BigDecimal("4700"))
+                intOrDefault(nutritionLabel.getPotassiumDV(), 0)
         );
     }
 
@@ -230,6 +236,10 @@ public class NutritionLabelPdfService {
                 <body>
                     <div class="nutrition-facts">
                         <div class="title">营养成分表</div>
+                        <div style="text-align: center; font-size: 10px; margin-bottom: 5px;">
+                            <div><strong>%s</strong></div>
+                            <div>原产地: %s</div>
+                        </div>
                         <div class="serving-info">每份: %s &nbsp;&nbsp; 每包装份数: %d</div>
                         
                         <div class="header-row">
@@ -305,24 +315,26 @@ public class NutritionLabelPdfService {
                 </body>
                 </html>
                 """,
+                nutritionLabel.getProductName(),
+                nutritionLabel.getCountryOfOrigin(),
                 nutritionLabel.getServingSize(),
                 intOrDefault(nutritionLabel.getServingsPerContainer(), 1),
                 convertCaloriesToKilojoules(nutritionLabel.getCalories()),
                 calculateChinaDailyValue(convertCaloriesToKilojoules(nutritionLabel.getCalories()), 8400),
                 formatValue(nutritionLabel.getProtein()),
-                calculateChinaDailyValue(nutritionLabel.getProtein(), new BigDecimal("60")),
+                intOrDefault(nutritionLabel.getProteinDV(), 0),
                 formatValue(nutritionLabel.getTotalFat()),
-                calculateChinaDailyValue(nutritionLabel.getTotalFat(), new BigDecimal("60")),
+                intOrDefault(nutritionLabel.getTotalFatDV(), 0),
                 formatValue(nutritionLabel.getSaturatedFat()),
-                "-",
+                intOrDefault(nutritionLabel.getSaturatedFatDV(), 0),
                 formatValue(nutritionLabel.getTransFat()),
                 formatValue(nutritionLabel.getTotalCarbohydrate()),
-                calculateChinaDailyValue(nutritionLabel.getTotalCarbohydrate(), new BigDecimal("300")),
+                intOrDefault(nutritionLabel.getTotalCarbohydrateDV(), 0),
                 formatValue(nutritionLabel.getTotalSugars()),
                 formatValue(nutritionLabel.getDietaryFiber()),
-                "-",
+                intOrDefault(nutritionLabel.getDietaryFiberDV(), 0),
                 formatValue(nutritionLabel.getSodium()),
-                calculateChinaDailyValue(nutritionLabel.getSodium(), new BigDecimal("2000")),
+                intOrDefault(nutritionLabel.getSodiumDV(), 0),
                 formatValue(nutritionLabel.getCholesterol())
         );
     }
@@ -371,6 +383,10 @@ public class NutritionLabelPdfService {
                 <body>
                     <div class="nutrition-facts">
                         <div class="title">栄養成分表示</div>
+                        <div style="text-align: center; font-size: 10px; margin-bottom: 5px;">
+                            <div><strong>%s</strong></div>
+                            <div>原産国: %s</div>
+                        </div>
                         <div class="serving-info">1食分（%s）当たり</div>
                         
                         <table class="nutrient-table">
@@ -435,6 +451,8 @@ public class NutritionLabelPdfService {
                 </body>
                 </html>
                 """,
+                nutritionLabel.getProductName(),
+                nutritionLabel.getCountryOfOrigin(),
                 nutritionLabel.getServingSize(),
                 nutritionLabel.getCalories(),
                 formatValue(nutritionLabel.getProtein()),
@@ -498,6 +516,10 @@ public class NutritionLabelPdfService {
                 <body>
                     <div class="nutrition-facts">
                         <div class="title">Nutrition Information</div>
+                        <div style="text-align: center; font-size: 10px; margin-bottom: 5px;">
+                            <div><strong>%s</strong></div>
+                            <div>Country of Origin: %s</div>
+                        </div>
                         <div class="serving-info">Typical values per 100g:</div>
                         
                         <table class="nutrient-table">
@@ -559,22 +581,24 @@ public class NutritionLabelPdfService {
                 </body>
                 </html>
                 """,
+                nutritionLabel.getProductName(),
+                nutritionLabel.getCountryOfOrigin(),
                 convertCaloriesToKilojoules(nutritionLabel.getCalories()),
                 nutritionLabel.getCalories(),
                 calculateEuDailyValue(nutritionLabel.getCalories(), 2000),
                 formatValue(nutritionLabel.getTotalFat()),
-                calculateEuDailyValue(nutritionLabel.getTotalFat(), new BigDecimal("70")),
+                intOrDefault(nutritionLabel.getTotalFatDV(), 0),
                 formatValue(nutritionLabel.getSaturatedFat()),
-                calculateEuDailyValue(nutritionLabel.getSaturatedFat(), new BigDecimal("20")),
+                intOrDefault(nutritionLabel.getSaturatedFatDV(), 0),
                 formatValue(nutritionLabel.getTotalCarbohydrate()),
-                calculateEuDailyValue(nutritionLabel.getTotalCarbohydrate(), new BigDecimal("260")),
+                intOrDefault(nutritionLabel.getTotalCarbohydrateDV(), 0),
                 formatValue(nutritionLabel.getTotalSugars()),
-                calculateEuDailyValue(nutritionLabel.getTotalSugars(), new BigDecimal("90")),
+                0, // EU doesn't have official DV for sugars
                 formatValue(nutritionLabel.getDietaryFiber()),
                 formatValue(nutritionLabel.getProtein()),
-                calculateEuDailyValue(nutritionLabel.getProtein(), new BigDecimal("50")),
+                intOrDefault(nutritionLabel.getProteinDV(), 0),
                 formatSodiumToSalt(nutritionLabel.getSodium()),
-                calculateEuDailyValue(convertSodiumToSaltValue(nutritionLabel.getSodium()), new BigDecimal("6"))
+                intOrDefault(nutritionLabel.getSodiumDV(), 0)
         );
     }
 

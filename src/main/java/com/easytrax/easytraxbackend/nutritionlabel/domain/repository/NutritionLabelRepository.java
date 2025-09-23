@@ -16,7 +16,7 @@ public interface NutritionLabelRepository extends JpaRepository<NutritionLabel, 
                                                  @Param("userId") Long userId, 
                                                  Pageable pageable);
 
-    @Query("SELECT n FROM NutritionLabel n WHERE n.id = :id AND n.project.user.id = :userId")
+    @Query("SELECT n FROM NutritionLabel n LEFT JOIN FETCH n.project WHERE n.id = :id AND n.project.user.id = :userId")
     Optional<NutritionLabel> findByIdAndUserId(@Param("id") Long id, @Param("userId") Long userId);
 
     @Query("SELECT n FROM NutritionLabel n WHERE n.project.user.id = :userId")

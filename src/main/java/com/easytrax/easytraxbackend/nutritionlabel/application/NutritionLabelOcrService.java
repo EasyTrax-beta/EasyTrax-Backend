@@ -171,26 +171,41 @@ public class NutritionLabelOcrService {
             return new NutritionLabelCreateRequest(
                     projectId,
                     jsonNode.path("productName").asText("Unknown Product"),
+                    jsonNode.path("countryOfOrigin").asText("Unknown"),
                     jsonNode.path("servingSize").asText("1 serving"),
                     jsonNode.path("servingsPerContainer").asInt(1),
                     jsonNode.path("calories").asInt(0),
                     jsonNode.path("caloriesFromFat").asInt(0),
                     getBigDecimalValue(jsonNode, "totalFat"),
+                    jsonNode.path("totalFatDV").asInt(0),
                     getBigDecimalValue(jsonNode, "saturatedFat"),
+                    jsonNode.path("saturatedFatDV").asInt(0),
                     getBigDecimalValue(jsonNode, "transFat"),
                     getBigDecimalValue(jsonNode, "cholesterol"),
+                    jsonNode.path("cholesterolDV").asInt(0),
                     getBigDecimalValue(jsonNode, "sodium"),
+                    jsonNode.path("sodiumDV").asInt(0),
                     getBigDecimalValue(jsonNode, "totalCarbohydrate"),
+                    jsonNode.path("totalCarbohydrateDV").asInt(0),
                     getBigDecimalValue(jsonNode, "dietaryFiber"),
+                    jsonNode.path("dietaryFiberDV").asInt(0),
                     getBigDecimalValue(jsonNode, "totalSugars"),
                     getBigDecimalValue(jsonNode, "addedSugars"),
+                    jsonNode.path("addedSugarsDV").asInt(0),
                     getBigDecimalValue(jsonNode, "protein"),
+                    jsonNode.path("proteinDV").asInt(0),
                     getBigDecimalValue(jsonNode, "vitaminD"),
+                    jsonNode.path("vitaminDDV").asInt(0),
                     getBigDecimalValue(jsonNode, "calcium"),
+                    jsonNode.path("calciumDV").asInt(0),
                     getBigDecimalValue(jsonNode, "iron"),
+                    jsonNode.path("ironDV").asInt(0),
                     getBigDecimalValue(jsonNode, "potassium"),
+                    jsonNode.path("potassiumDV").asInt(0),
                     getBigDecimalValue(jsonNode, "vitaminA"),
+                    jsonNode.path("vitaminADV").asInt(0),
                     getBigDecimalValue(jsonNode, "vitaminC"),
+                    jsonNode.path("vitaminCDV").asInt(0),
                     labelFormat
             );
         } catch (Exception e) {
@@ -217,11 +232,12 @@ public class NutritionLabelOcrService {
 
     private NutritionLabelCreateRequest createDefaultNutritionRequest(Long projectId, LabelFormat labelFormat) {
         return new NutritionLabelCreateRequest(
-                projectId, "Unknown Product", "1 serving", 1, 0, 0,
-                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                projectId, "Unknown Product", "Unknown", "1 serving", 1, 0, 0,
+                BigDecimal.ZERO, 0, BigDecimal.ZERO, 0, BigDecimal.ZERO, BigDecimal.ZERO, 0,
+                BigDecimal.ZERO, 0, BigDecimal.ZERO, 0, BigDecimal.ZERO, 0,
+                BigDecimal.ZERO, BigDecimal.ZERO, 0, BigDecimal.ZERO, 0,
+                BigDecimal.ZERO, 0, BigDecimal.ZERO, 0, BigDecimal.ZERO, 0,
+                BigDecimal.ZERO, 0, BigDecimal.ZERO, 0, BigDecimal.ZERO, 0,
                 labelFormat
         );
     }
