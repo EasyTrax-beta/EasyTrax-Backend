@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.net.URI;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -35,18 +36,50 @@ public class KotraApiService {
     }
 
     public CompletableFuture<KotraCountryInfo> getCountryInformation(String countryCode) {
-        return webClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/B410001/kotra_nationalInformation/natnInfo/natnInfo")
-                        .queryParam("serviceKey", serviceKey)
-                        .queryParam("type", "json")
-                        .queryParam("isoWd2CntCd", countryCode)
-                        .build())
-                .retrieve()
-                .bodyToMono(String.class)
-                .map(this::parseCountryInfoResponse)
-                .onErrorReturn(new KotraCountryInfo())
-                .toFuture();
+        log.debug("KOTRA API 요청 시작 - 국가코드: {}", countryCode);
+        
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                // 수동으로 URL 구성하여 인코딩 문제 해결
+                String encodedServiceKey = serviceKey.replace("/", "%2F").replace("+", "%2B").replace("=", "%3D");
+                String fullUrl = String.format("https://apis.data.go.kr/B410001/kotra_nationalInformation/natnInfo/natnInfo?serviceKey=%s&isoWd2CntCd=%s&type=json", 
+                        encodedServiceKey, countryCode);
+                
+                log.debug("KOTRA API 요청 URI: {}", fullUrl);
+                
+                java.net.URL url = new java.net.URL(fullUrl);
+                java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("User-Agent", "Java/17");
+                conn.setRequestProperty("Accept", "application/json");
+                conn.setConnectTimeout(5000);
+                conn.setReadTimeout(10000);
+                
+                int responseCode = conn.getResponseCode();
+                log.debug("KOTRA API 응답 코드: {}", responseCode);
+                
+                if (responseCode == 200) {
+                    try (java.io.BufferedReader reader = new java.io.BufferedReader(
+                            new java.io.InputStreamReader(conn.getInputStream(), java.nio.charset.StandardCharsets.UTF_8))) {
+                        StringBuilder response = new StringBuilder();
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            response.append(line);
+                        }
+                        String responseBody = response.toString();
+                        log.debug("KOTRA API 원본 응답 길이: {} bytes", responseBody.length());
+                        return parseCountryInfoResponse(responseBody);
+                    }
+                } else {
+                    log.error("KOTRA API HTTP 오류 - 상태코드: {}", responseCode);
+                    return new KotraCountryInfo();
+                }
+                
+            } catch (Exception e) {
+                log.error("KOTRA API 호출 중 오류 발생", e);
+                return new KotraCountryInfo();
+            }
+        });
     }
 
     public CompletableFuture<String> searchRelevantKotraData(String userQuery) {
@@ -63,11 +96,17 @@ public class KotraApiService {
     private KotraCountryInfo parseCountryInfoResponse(String responseBody) {
         try {
             // 응답 내용 로깅 (디버깅용)
-            log.debug("KOTRA API 응답: {}", responseBody.substring(0, Math.min(responseBody.length(), 200)) + "...");
+            log.debug("KOTRA API 전체 응답: {}", responseBody);
             
             // HTML 응답인지 확인
             if (responseBody.trim().startsWith("<")) {
                 log.warn("KOTRA API가 HTML 응답을 반환했습니다. API 키나 URL을 확인하세요.");
+                return new KotraCountryInfo();
+            }
+            
+            // JSON 응답인지 확인
+            if (!responseBody.trim().startsWith("{")) {
+                log.warn("KOTRA API가 JSON이 아닌 응답을 반환했습니다: {}", responseBody);
                 return new KotraCountryInfo();
             }
             
@@ -76,26 +115,43 @@ public class KotraApiService {
                     new TypeReference<KotraApiResponse<KotraCountryInfo>>() {}
             );
             
-            if (response.getResponse() != null && 
-                response.getResponse().getBody() != null && 
-                response.getResponse().getBody().getItemList() != null &&
-                response.getResponse().getBody().getItemList().getItem() != null &&
-                response.getResponse().getBody().getItemList().getItem().getKorCompList() != null &&
-                response.getResponse().getBody().getItemList().getItem().getKorCompList().getKorComp() != null &&
-                !response.getResponse().getBody().getItemList().getItem().getKorCompList().getKorComp().isEmpty()) {
-                return response.getResponse().getBody().getItemList().getItem().getKorCompList().getKorComp().get(0);
+            log.debug("파싱된 응답 객체: response={}", response);
+            
+            if (response.getResponse() != null) {
+                log.debug("response.getResponse(): {}", response.getResponse());
+                if (response.getResponse().getBody() != null) {
+                    log.debug("response.getResponse().getBody(): {}", response.getResponse().getBody());
+                    if (response.getResponse().getBody().getItemList() != null) {
+                        log.debug("ItemList 존재함");
+                        if (response.getResponse().getBody().getItemList().getItem() != null) {
+                            log.debug("Item 존재함");
+                            if (response.getResponse().getBody().getItemList().getItem().getKorCompList() != null) {
+                                log.debug("KorCompList 존재함");
+                                if (response.getResponse().getBody().getItemList().getItem().getKorCompList().getKorComp() != null &&
+                                    !response.getResponse().getBody().getItemList().getItem().getKorCompList().getKorComp().isEmpty()) {
+                                    KotraCountryInfo countryInfo = response.getResponse().getBody().getItemList().getItem().getKorCompList().getKorComp().get(0);
+                                    log.debug("성공적으로 파싱된 국가정보: {}", countryInfo.getCountryNameKor());
+                                    return countryInfo;
+                                }
+                            }
+                        }
+                    }
+                }
             }
             
-            log.warn("KOTRA API 응답에 데이터가 없습니다: {}", responseBody);
+            log.warn("KOTRA API 응답에 예상된 데이터 구조가 없습니다");
             return new KotraCountryInfo();
         } catch (Exception e) {
-            log.error("KOTRA API 응답 파싱 중 오류 발생. 응답 내용: {}", 
-                responseBody.substring(0, Math.min(responseBody.length(), 500)), e);
+            log.error("KOTRA API 응답 파싱 중 오류 발생. 응답 길이: {}, 오류: {}", 
+                responseBody.length(), e.getMessage(), e);
             return new KotraCountryInfo();
         }
     }
 
     private String extractCountryCodeFromQuery(String query) {
+        if (query == null || query.isBlank()) {
+            return null;
+        }
         String lowerQuery = query.toLowerCase();
         
         // 수출 대상 국가만 지원: 미국, 중국, 일본, 유럽

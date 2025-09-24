@@ -44,4 +44,9 @@ public record ChatSessionListResponse(
                 chatSession.getUpdatedAt()
         );
     }
+    
+    public ChatSessionListResponse(Long id, ChatbotType chatbotType, String title, 
+                                   String lastMessage, Long messageCount, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this(id, chatbotType, title, lastMessage, messageCount.intValue(), createdAt, updatedAt);
+    }
 }

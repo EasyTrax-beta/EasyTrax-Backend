@@ -45,11 +45,9 @@ public class ChatSessionService {
 
     public Page<ChatSessionListResponse> findChatSessions(Long userId, ChatbotType chatbotType, Pageable pageable) {
         User user = findUserById(userId);
-        Page<ChatSession> sessions = (chatbotType != null) ?
-                chatSessionRepository.findByUserAndChatbotTypeOrderByUpdatedAtDesc(user, chatbotType, pageable) :
-                chatSessionRepository.findByUserOrderByUpdatedAtDesc(user, pageable);
-
-        return sessions.map(ChatSessionListResponse::from);
+        return (chatbotType != null) ?
+                chatSessionRepository.findSessionListByUserAndChatbotType(user, chatbotType, pageable) :
+                chatSessionRepository.findSessionListByUser(user, pageable);
     }
 
     @Transactional

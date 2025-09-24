@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -26,6 +27,7 @@ import java.util.concurrent.CompletableFuture;
 @RestController
 @RequestMapping("/api/chatbot")
 @RequiredArgsConstructor
+@Slf4j
 @Tag(name = "Chatbot", description = "AI 챗봇 API")
 public class ChatbotController {
 
@@ -109,6 +111,7 @@ public class ChatbotController {
             ChatMessageResponse response = chatMessageService.sendMessage(sessionId, request, userDetails.getUserId()).get();
             return ResponseEntity.ok(response);
         } catch (Exception e) {
+            log.error("메시지 전송 중 오류가 발생했습니다: {}", e.getMessage());
             throw new RuntimeException("메시지 전송 중 오류가 발생했습니다.", e);
         }
     }
