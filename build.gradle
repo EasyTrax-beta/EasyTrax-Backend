@@ -48,6 +48,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     // PDF generation
     implementation 'com.itextpdf:html2pdf:5.0.2'
+    // HTTP client for Gemini API
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
 }
 
 tasks.named('test') {
