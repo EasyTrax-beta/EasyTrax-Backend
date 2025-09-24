@@ -45,7 +45,8 @@ public class KotraApiService {
                 String fullUrl = String.format("https://apis.data.go.kr/B410001/kotra_nationalInformation/natnInfo/natnInfo?serviceKey=%s&isoWd2CntCd=%s&type=json", 
                         encodedServiceKey, countryCode);
                 
-                log.debug("KOTRA API 요청 URI: {}", fullUrl);
+                String safeUrl = fullUrl.replaceAll("(?i)(serviceKey=)[^&]+", "$1****");
+                log.debug("KOTRA API 요청 URI: {}", safeUrl);
                 
                 java.net.URL url = new java.net.URL(fullUrl);
                 java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();

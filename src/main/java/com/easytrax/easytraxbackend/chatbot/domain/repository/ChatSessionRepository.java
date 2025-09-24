@@ -28,39 +28,91 @@ public interface ChatSessionRepository extends JpaRepository<ChatSession, Long> 
             Pageable pageable
     );
 
-    @Query("""
+    @Query(
+            value = """
             SELECT new com.easytrax.easytraxbackend.chatbot.api.dto.response.ChatSessionListResponse(
-                cs.id, 
-                cs.chatbotType, 
+                cs.id,
+                cs.chatbotType,
                 cs.title,
-                (SELECT cm.content FROM ChatMessage cm WHERE cm.chatSession = cs ORDER BY cm.createdAt DESC LIMIT 1),
+                (
+                  SELECT cm1.content
+                  FROM ChatMessage cm1
+                  WHERE cm1.chatSession = cs
+                    AND cm1.createdAt = (
+                      SELECT MAX(cm2.createdAt)
+                      FROM ChatMessage cm2
+                      WHERE cm2.chatSession = cs
+                    )
+                    AND cm1.id = (
+                      SELECT MAX(cm3.id)
+                      FROM ChatMessage cm3
+                      WHERE cm3.chatSession = cs
+                        AND cm3.createdAt = (
+                          SELECT MAX(cm4.createdAt)
+                          FROM ChatMessage cm4
+                          WHERE cm4.chatSession = cs
+                        )
+                    )
+                ),
                 (SELECT COUNT(cm) FROM ChatMessage cm WHERE cm.chatSession = cs),
                 cs.createdAt,
                 cs.updatedAt
             )
-            FROM ChatSession cs 
-            WHERE cs.user = :user 
+            FROM ChatSession cs
+            WHERE cs.user = :user
             ORDER BY cs.updatedAt DESC
-            """)
+            """,
+            countQuery = """
+            SELECT COUNT(cs)
+            FROM ChatSession cs
+            WHERE cs.user = :user
+            """
+    )
     Page<ChatSessionListResponse> findSessionListByUser(@Param("user") User user, Pageable pageable);
 
-    @Query("""
+    @Query(
+            value = """
             SELECT new com.easytrax.easytraxbackend.chatbot.api.dto.response.ChatSessionListResponse(
-                cs.id, 
-                cs.chatbotType, 
+                cs.id,
+                cs.chatbotType,
                 cs.title,
-                (SELECT cm.content FROM ChatMessage cm WHERE cm.chatSession = cs ORDER BY cm.createdAt DESC LIMIT 1),
+                (
+                  SELECT cm1.content
+                  FROM ChatMessage cm1
+                  WHERE cm1.chatSession = cs
+                    AND cm1.createdAt = (
+                      SELECT MAX(cm2.createdAt)
+                      FROM ChatMessage cm2
+                      WHERE cm2.chatSession = cs
+                    )
+                    AND cm1.id = (
+                      SELECT MAX(cm3.id)
+                      FROM ChatMessage cm3
+                      WHERE cm3.chatSession = cs
+                        AND cm3.createdAt = (
+                          SELECT MAX(cm4.createdAt)
+                          FROM ChatMessage cm4
+                          WHERE cm4.chatSession = cs
+                        )
+                    )
+                ),
                 (SELECT COUNT(cm) FROM ChatMessage cm WHERE cm.chatSession = cs),
                 cs.createdAt,
                 cs.updatedAt
             )
-            FROM ChatSession cs 
-            WHERE cs.user = :user AND cs.chatbotType = :chatbotType 
+            FROM ChatSession cs
+            WHERE cs.user = :user AND cs.chatbotType = :chatbotType
             ORDER BY cs.updatedAt DESC
-            """)
+            """,
+            countQuery = """
+            SELECT COUNT(cs)
+            FROM ChatSession cs
+            WHERE cs.user = :user AND cs.chatbotType = :chatbotType
+            """
+    )
     Page<ChatSessionListResponse> findSessionListByUserAndChatbotType(
-            @Param("user") User user, 
-            @Param("chatbotType") ChatbotType chatbotType, 
+            @Param("user") User user,
+            @Param("chatbotType") ChatbotType chatbotType,
             Pageable pageable
     );
 }
